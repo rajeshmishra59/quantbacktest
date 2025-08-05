@@ -4,9 +4,9 @@ import numpy as np
 import warnings
 import logging
 
-from .base_strategy import BaseStrategy
+from strategies.base_strategy import BaseStrategy
 from typing import Optional, Dict, Any
-from .base_strategy import BaseStrategy
+
 
 
 warnings.simplefilter(action='ignore', category=FutureWarning)

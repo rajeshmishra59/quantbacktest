@@ -3,7 +3,8 @@ import pandas as pd
 import numpy as np
 from scipy.signal import find_peaks
 import logging
-from .base_strategy import BaseStrategy
+from strategies.base_strategy import BaseStrategy
+
 
 class NumeroUnoStrategy(BaseStrategy):
     def __init__(self, df: pd.DataFrame, symbol: str = None, logger=None, primary_timeframe: int = 5,

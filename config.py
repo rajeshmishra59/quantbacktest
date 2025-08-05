@@ -3,6 +3,8 @@ DB_TABLE_NAME = "price_data_1min"
 from datetime import time
 import os
 from dotenv import load_dotenv
+DB_PATH = r"D:\AppDevelopment\AI Generated App\AlgoTradingLab_V1.3\data\market_data.db"
+
 
 # --- API KEY LOADING ---
 # .env file se API credentials load karega

@@ -71,3 +71,16 @@ def save_all_trades(run_id, trades, db_path="backtest_results.db"):
         ))
     conn.commit()
     conn.close()
+    
+def summarize_trades(trades):
+    """Summarize trades: count, wins, total pnl, winrate."""
+    n = len(trades)
+    wins = sum(1 for t in trades if t.get('pnl', 0) > 0)
+    total = sum(t.get('pnl', 0) for t in trades)
+    winrate = 100 * wins / n if n else 0
+    return {
+        "num_trades": n,
+        "wins": wins,
+        "winrate": winrate,
+        "total_pnl": total
+    }

@@ -16,6 +16,7 @@ class BaseStrategy:
         df_15min: Optional[pd.DataFrame] = None,
         symbol: Optional[str] = None,
         logger: Optional[logging.Logger] = None,
+        primary_timeframe: int = 5,                # <--- Added!
         config_dict: Optional[Dict[str, Any]] = None,
         strategy_version: Optional[str] = None,
         **kwargs
@@ -28,6 +29,9 @@ class BaseStrategy:
         self.logger: logging.Logger = logger or logging.getLogger(__name__)
         self.config_dict: Dict[str, Any] = config_dict or {}
         self.strategy_version: str = strategy_version or "v1.0"
+        self.primary_timeframe: int = primary_timeframe      # <--- Added!
+
+    # ... rest as before ...
 
     def log(self, message: str, level: str = 'info') -> None:
         if self.logger:

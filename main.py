@@ -1,17 +1,16 @@
 # quantbacktest/main.py
 
 from data.loader import DataLoader
-from strategies.alphaone_strategy import AlphaOneStrategy
-from strategies.apex_strategy import ApexStrategy
-from strategies.numerouno_strategy import NumeroUnoStrategy
 from engine.backtest import BacktestEngine
 from utils.metrics import Metrics
 from utils.results_db import init_results_db, save_run_metadata, save_all_trades
+from utils.strategy_loader import auto_discover_strategies   # <-- NEW!
 
-from config import DB_TABLE_NAME  # You should define this in your config.py
+from config import DB_TABLE_NAME
 
 import os
 from typing import Type
+import sys
 
 def code_hash_from_file(filename: str) -> str:
     import hashlib
@@ -19,10 +18,8 @@ def code_hash_from_file(filename: str) -> str:
         return hashlib.sha256(f.read()).hexdigest()
 
 def main():
-    # ---- CONFIG ----
     db_path = r"D:\AppDevelopment\AI Generated App\AlgoTradingLab_V1.3\data\market_data.db"
 
-    # ---- LOAD AND CHOOSE TABLE ----
     loader = DataLoader(db_path)
     available_tables = loader.list_tables()
     print("Available tables:", available_tables)
@@ -30,20 +27,17 @@ def main():
     table_name = input(f"Enter table name [{DB_TABLE_NAME}]: ").strip()
     if not table_name:
         table_name = DB_TABLE_NAME
-
     if table_name not in available_tables:
         print(f"Table '{table_name}' not found, using default '{DB_TABLE_NAME}'.")
         table_name = DB_TABLE_NAME
 
-    # ---- STRATEGY/SYMBOL/TIMEFRAME INPUT ----
-    strat_map = {
-        "alphaone": AlphaOneStrategy,
-        "apex": ApexStrategy,
-        "numerouno": NumeroUnoStrategy
-    }
-    strat_name = input("Enter strategy name (alphaone, apex, numerouno): ").strip().lower()
+    # --- Automated strategy discovery ---
+    strat_map = auto_discover_strategies("strategies")
+    print("Available strategies:", list(strat_map))
+    strat_name = input(f"Enter strategy name {tuple(strat_map.keys())}: ").strip().lower()
     if strat_name not in strat_map:
-        raise ValueError(f"Strategy '{strat_name}' not supported. Choose from {list(strat_map)}")
+        print(f"Strategy '{strat_name}' not supported. Choose from {list(strat_map)}")
+        sys.exit(1)
 
     StratClass: Type = strat_map[strat_name]
 
@@ -53,7 +47,6 @@ def main():
     timeframe = int(input("Enter timeframe (in minutes): ").strip())
     initial_cash = 100_000
 
-    # ---- ENGINE SETUP ----
     print("Setting up DB for results...")
     init_results_db("backtest_results.db")
 
@@ -98,7 +91,6 @@ def main():
     else:
         print("No trades generated.")
 
-    # ---- Save to DB ----
     print("Saving results to DB...")
     run_id = save_run_metadata(
         strat.name, code_hash, symbol, timeframe, start_date, end_date,

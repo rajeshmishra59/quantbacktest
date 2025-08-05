@@ -3,7 +3,8 @@
 import pandas as pd
 import numpy as np
 import logging
-from .base_strategy import BaseStrategy
+from strategies.base_strategy import BaseStrategy
+
 from scipy.signal import find_peaks
 
 logger = logging.getLogger(__name__)
