@@ -53,7 +53,9 @@ class SankhyaEkStrategy(BaseStrategy):
         if self.df.empty: return
 
         df = self.df
-        df['entry_signal'], df['stop_loss'], df['target'] = 'NONE', np.nan, np.nan # <-- यहाँ np.nan का उपयोग
+        # Initialize boolean signal columns
+        df['signal_long'], df['signal_short'] = False, False
+        df['stop_loss'], df['target'] = np.nan, np.nan
         
         latest_timestamp = df.index[-1]
         current_date, current_time = latest_timestamp.date(), latest_timestamp.time()

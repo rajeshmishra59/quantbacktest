@@ -1,62 +1,42 @@
-# File: config.py (Updated "Best of Both Worlds" Version)
-DB_TABLE_NAME = "price_data_1min"
-from datetime import time
+# quant_backtesting_project/config.py
+# Yeh file project ki sabhi mukhya settings ko store karegi.
+
 import os
-from dotenv import load_dotenv
-DB_PATH = r"D:\AppDevelopment\AI Generated App\AlgoTradingLab_V1.3\data\market_data.db"
+
+# --- Database Configuration ---
+# Market Data DB
+MARKET_DATA_DB_PATH = r"D:\AppDevelopment\AI Generated App\AlgoTradingLab_V1.3\data\market_data.db"
+DB_TABLE_NAME = "price_data_1min"
+
+# Results DB - NAYA
+RESULTS_DB_PATH = os.path.join(os.path.dirname(__file__), 'data', 'backtest_results.db')
 
 
-# --- API KEY LOADING ---
-# .env file se API credentials load karega
-load_dotenv() 
-ZERODHA_API_KEY = os.getenv("ZERODHA_API_KEY")
-ZERODHA_ACCESS_TOKEN = os.getenv("ZERODHA_ACCESS_TOKEN")
+# --- Portfolio Configuration ---
+INITIAL_CASH = 100000.0
+RISK_PER_TRADE_PCT = 0.02  # 2% risk per trade
+MAX_DAILY_LOSS_PCT = 0.05  # 5% max loss per day
 
-# --- TRADING SESSION (from new config) ---
-TRADING_START_TIME = time(9, 15)
-TRADING_END_TIME = time(15, 35) # NSE Equities ke liye standard time
+# --- Cost Configuration ---
+BROKERAGE_PCT = 0.05  # 0.05% per trade
+SLIPPAGE_PCT = 0.02   # 0.02% per trade
 
-# --- MASTER SYMBOL LISTS ---
-NIFTY_50 = [
-    "RELIANCE", "TCS", "INFY", "HDFCBANK", "ICICIBANK", "HINDUNILVR", "SBIN", "ITC", "BHARTIARTL", "KOTAKBANK",
-    "LT", "ASIANPAINT", "HCLTECH", "BAJFINANCE", "MARUTI", "AXISBANK", "ULTRACEMCO", "NESTLEIND", "SUNPHARMA", "TITAN",
-    "WIPRO", "TECHM", "POWERGRID", "COALINDIA", "NTPC", "GRASIM", "TATAMOTORS", "JSWSTEEL", "ADANIENT", "ADANIPORTS",
-    "DIVISLAB", "ONGC", "HINDALCO", "SBILIFE", "BAJAJFINSV", "BRITANNIA", "HEROMOTOCO", "CIPLA", "EICHERMOT", "BPCL",
-    "UPL", "INDUSINDBK", "APOLLOHOSP", "HDFCLIFE", "BAJAJ-AUTO", "TATASTEEL", "SHREECEM", "DRREDDY", "M&M", "IOC"
-]
-
-NIFTY_NEXT_50 = [
-    "AMBUJACEM", "AUROPHARMA", "BANKBARODA", "BERGEPAINT", "CANBK", "CHOLAFIN", "DABUR", "DLF", "GAIL",
-    "GODREJCP", "ICICIGI", "ICICIPRULI", "IDFCFIRSTB", "IGL", "INDIGO", "MUTHOOTFIN", "NAUKRI", "PIDILITIND",
-    "PNB", "RECLTD", "SAIL", "SRF", "TORNTPHARM", "TVSMOTOR", "UBL", "VEDL", "VOLTAS", "HAVELLS", "PEL", "PAGEIND", "COLPAL", "GLAND", "MPHASIS", "PETRONET", "HINDPETRO", "TRENT", "BEL",
-    "CUMMINSIND", "ABBOTINDIA", "SBICARD", "INDUSTOWER", "BIOCON", "YESBANK", "BOSCHLTD", "CONCOR", "NMDC"
-]
-
-# --- STRATEGY & SYMBOL CONFIGURATION ---
-# Yahan aap har strategy ke liye uska timeframe aur symbol list set kar sakte hain.
-
-# Sabhi 100 stocks ki ek master list
-ALL_SYMBOLS = NIFTY_50 + NIFTY_NEXT_50
-
-STRATEGY_CONFIG = {
-    "AlphaOneStrategy": {
-        "timeframe": 15,  # AlphaOne 15-minute timeframe par chalegi
-        "symbols": NIFTY_50,
-        "capital": 100000
-    },
-    "ApexStrategy": {
-        "timeframe": 5,   # Apex 5-minute timeframe par chalegi
-        "symbols": ALL_SYMBOLS,
-        "capital": 100000
-    },
-    "NumeroUnoStrategy": {
-        "timeframe": 5,   # NumeroUno 5-minute timeframe par chalegi
-        "symbols": ALL_SYMBOLS,
-        "capital": 100000
+# --- Strategy Default Parameters ---
+STRATEGY_PARAMS = {
+    'sma_crossover': {
+        'short_window': 20,
+        'long_window': 50
     }
 }
 
-# --- EXECUTION SETTINGS (from new config) ---
-MAIN_LOOP_SLEEP_SECONDS = 30
-REQUIRED_INITIAL_CANDLES = 100
+# --- Results Directory (ab istemal nahi hoga, DB use karenge) ---
+# RESULTS_DIR = os.path.join(os.path.dirname(__file__), 'results')
 
+# Function to ensure data directory exists for results DB
+def ensure_data_dir():
+    data_dir = os.path.join(os.path.dirname(__file__), 'data')
+    if not os.path.exists(data_dir):
+        os.makedirs(data_dir)
+
+print("Configuration loaded.")
+ensure_data_dir()

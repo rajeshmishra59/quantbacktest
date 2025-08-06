@@ -74,6 +74,9 @@ class AlphaOneStrategy(BaseStrategy):
         long_entry_cond = down_streak_active.shift(1) & is_green & is_strong & has_volume
         short_entry_cond = up_streak_active.shift(1) & is_red & is_strong & has_volume
 
+        df['signal_long'] = long_entry_cond
+        df['signal_short'] = short_entry_cond
+
         df.loc[long_entry_cond, 'entry_signal'] = 'LONG'
         df.loc[long_entry_cond, 'stop_loss'] = df['low']
         risk_long = df['close'] - df['stop_loss']

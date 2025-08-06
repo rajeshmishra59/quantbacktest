@@ -1,69 +1,58 @@
-# File: apex_strategy.py (Triangle Pattern Version)
 
+# File: strategies/apex_strategy.py
 import pandas as pd
 import numpy as np
-import logging
 from strategies.base_strategy import BaseStrategy
-
-from scipy.signal import find_peaks
-
-logger = logging.getLogger(__name__)
 
 class ApexStrategy(BaseStrategy):
     """
-    Apex Strategy (Triangle Pattern Breakout): Identifies contracting volatility
-    which indicates a triangle, and trades the breakout.
+    Identifies a volatility contraction (squeeze) and trades the subsequent breakout.
+    This pattern often resembles a triangle or wedge.
     """
-    def __init__(self, df: pd.DataFrame, symbol: str = None, logger=None,
-                 primary_timeframe: int = 5, **kwargs):
+    def __init__(self, symbol, initial_capital, logger):
+        super().__init__(symbol, initial_capital, logger)
+        self.squeeze_window = 30  # Look for contraction in the last 30 candles
+        self.historical_window = 200 # Compare against the last 200 candles' volatility
+        self.volatility_ratio_threshold = 0.6 # Squeeze is active if recent vol is <60% of historical
 
-        super().__init__(df, symbol=symbol, logger=logger, primary_timeframe=primary_timeframe)
-        self.name = "Apex"
-        self.primary_timeframe = primary_timeframe
-        self.log(f"ApexStrategy (Triangle Pattern) initialized for {self.symbol} with {self.primary_timeframe} min TF.")
+    def add_indicators(self):
+        # This strategy calculates volatility dynamically, no standard indicators needed upfront.
+        pass
 
-
-    def calculate_indicators(self):
-        """
-        Resamples data. No special indicators needed as this is a price action strategy.
-        """
-        if self.df_1min_raw.empty:
-            self.df = pd.DataFrame()
-            return
-
-        tf_string = f'{self.primary_timeframe}T'
-        self.df = self.df_1min_raw.resample(tf_string).agg(
-            {'open': 'first', 'high': 'max', 'low': 'min', 'close': 'last', 'volume': 'sum'}
-        ).dropna()
-        
     def generate_signals(self):
         """
         Detects a contracting range (triangle) and trades the breakout.
         """
         df = self.df
-        df['entry_signal'], df['stop_loss'] = 'NONE', np.nan
+        # Initialize boolean signal columns
+        df['signal_long'] = False
+        df['signal_short'] = False
+        df['stop_loss'] = np.nan
         df['target'], df['target2'], df['target3'] = np.nan, np.nan, np.nan
         
-        window = 30
-        if len(df) < window + 100: # Need sufficient historical data to compare
+        # Ensure we have enough data to perform the comparison
+        if len(df) < self.historical_window + self.squeeze_window:
             return
 
-        # Simplified logic: Check for volatility contraction
-        recent_candles = df.iloc[-window:]
-        historical_candles = df.iloc[-200:-window]
+        # Define the time windows for comparison
+        recent_candles = df.iloc[-self.squeeze_window:]
+        historical_candles = df.iloc[-(self.historical_window + self.squeeze_window):-self.squeeze_window]
         
+        # Calculate the average true range for both periods
         recent_avg_range = (recent_candles['high'] - recent_candles['low']).mean()
         historical_avg_range = (historical_candles['high'] - historical_candles['low']).mean()
         
-        # If recent volatility is less than 60% of historical volatility, we have a squeeze
-        if recent_avg_range < historical_avg_range * 0.6:
+        # If recent volatility is significantly less than historical, a squeeze is identified
+        is_squeeze = recent_avg_range < (historical_avg_range * self.volatility_ratio_threshold)
+        
+        if is_squeeze:
             breakout_high = recent_candles['high'].max()
             breakout_low = recent_candles['low'].min()
             current_close = df['close'].iloc[-1]
             
             # Check for a breakout from this contracted range
             if current_close > breakout_high:
-                df.at[df.index[-1], 'entry_signal'] = 'LONG'
+                df.at[df.index[-1], 'signal_long'] = True # Set boolean signal
                 sl = breakout_low
                 risk = current_close - sl
                 if risk > 0:
@@ -71,10 +60,10 @@ class ApexStrategy(BaseStrategy):
                     df.at[df.index[-1], 'target'] = current_close + (risk * 1.5)
                     df.at[df.index[-1], 'target2'] = current_close + (risk * 2.5)
                     df.at[df.index[-1], 'target3'] = current_close + (risk * 4.5)
-                    self.log(f"Triangle Breakout LONG signal for {self.symbol}")
+                    self.log(f"APEX Breakout LONG for {self.symbol} at {current_close:.2f}", "warning")
                 
             elif current_close < breakout_low:
-                df.at[df.index[-1], 'entry_signal'] = 'SHORT'
+                df.at[df.index[-1], 'signal_short'] = True # Set boolean signal
                 sl = breakout_high
                 risk = sl - current_close
                 if risk > 0:
@@ -82,4 +71,4 @@ class ApexStrategy(BaseStrategy):
                     df.at[df.index[-1], 'target'] = current_close - (risk * 1.5)
                     df.at[df.index[-1], 'target2'] = current_close - (risk * 2.5)
                     df.at[df.index[-1], 'target3'] = current_close - (risk * 4.5)
-                    self.log(f"Triangle Breakout SHORT signal for {self.symbol}")
+                    self.log(f"APEX Breakout SHORT for {self.symbol} at {current_close:.2f}", "warning")

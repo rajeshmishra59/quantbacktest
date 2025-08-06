@@ -1,61 +1,23 @@
-import os
-import importlib.util
-import inspect
-from typing import Dict, Type
-from strategies.base_strategy import BaseStrategy
-import pandas as pd
-import sqlite3
+# quant_backtesting_project/utils/strategy_loader.py
+# Yeh utility strategies folder se signal generation functions ko dynamically load karegi.
 
-class StrategyLoader:
+import importlib
+
+def load_strategy_signal_generator(strategy_name: str):
     """
-    Simple OHLCV data loader for SQLite.
-    You can modify db_path/table as needed.
+    Strategy ke naam se uski signal generation file aur function ko load karta hai.
+    
+    Convention: Har strategy ke liye 'strategies' folder mein ek file honi chahiye
+    jiska naam '{strategy_name}_signals.py' ho aur uske andar ek function
+    'generate_signals' ho.
     """
-    def __init__(self, db_path="D:/AppDevelopment/AI Generated App/AlgoTradingLab_V1.3/data/market_data.db"):
-        self.db_path = db_path
+    try:
+        module_path = f"strategies.{strategy_name}_signals"
+        strategy_module = importlib.import_module(module_path)
+        
+        # Har module se 'generate_signals' function ko return karein
+        return getattr(strategy_module, 'generate_signals')
+    except (ImportError, AttributeError) as e:
+        print(f"Error loading strategy '{strategy_name}': {e}")
+        return None
 
-    def fetch_ohlcv(self, symbol, start_date, end_date, table="price_data_1min"):
-        """
-        Loads OHLCV data for a symbol and date range from SQLite.
-        """
-        query = f"""
-            SELECT * FROM {table}
-            WHERE symbol = ?
-            AND DATE(timestamp) >= ?
-            AND DATE(timestamp) <= ?
-            ORDER BY timestamp
-        """
-        with sqlite3.connect(self.db_path) as con:
-            df = pd.read_sql_query(query, con, params=(symbol, start_date, end_date))
-        return df
-
-
-def auto_discover_strategies(strategies_path: str = "strategies") -> Dict[str, Type[BaseStrategy]]:
-    strat_map = {}
-    for fname in os.listdir(strategies_path):
-        if fname.endswith('_strategy.py') and fname != 'base_strategy.py':
-            module_name = fname[:-3]
-            file_path = os.path.join(strategies_path, fname)
-            spec = importlib.util.spec_from_file_location(module_name, file_path)
-            if spec and spec.loader:
-                module = importlib.util.module_from_spec(spec)
-                try:
-                    spec.loader.exec_module(module)
-                except Exception as e:
-                    print(f"[DISCOVERY] Could not import {fname}: {e}")
-                    continue
-                registered = False
-                for name, obj in inspect.getmembers(module, inspect.isclass):
-                    if (
-                        issubclass(obj, BaseStrategy)
-                        and obj is not BaseStrategy
-                        and name.endswith("Strategy")
-                    ):
-                        # key = normalized module name before _strategy
-                        strat_key = module_name.replace("_strategy", "").lower()
-                        strat_map[strat_key] = obj
-                        print(f"[DISCOVERY] Registered: {fname} => class {name}")
-                        registered = True
-                if not registered:
-                    print(f"[DISCOVERY] {fname} SKIPPED: No subclass of BaseStrategy ending with 'Strategy'.")
-    return strat_map
