@@ -1,74 +1,47 @@
-
 # File: strategies/apex_strategy.py
+# UPDATED for Universal Base Strategy Template
+
 import pandas as pd
 import numpy as np
 from strategies.base_strategy import BaseStrategy
+from typing import Optional, Dict, Any
 
 class ApexStrategy(BaseStrategy):
-    """
-    Identifies a volatility contraction (squeeze) and trades the subsequent breakout.
-    This pattern often resembles a triangle or wedge.
-    """
-    def __init__(self, symbol, initial_capital, logger):
-        super().__init__(symbol, initial_capital, logger)
-        self.squeeze_window = 30  # Look for contraction in the last 30 candles
-        self.historical_window = 200 # Compare against the last 200 candles' volatility
-        self.volatility_ratio_threshold = 0.6 # Squeeze is active if recent vol is <60% of historical
+    def __init__(self, df: pd.DataFrame, symbol: Optional[str] = None, logger=None, **kwargs):
+        super().__init__(df, symbol=symbol, logger=logger, **kwargs)
+        self.name = "ApexStrategy"
+        self.squeeze_window = self.params.get('squeeze_window', 30)
+        self.historical_window = self.params.get('historical_window', 200)
+        self.volatility_ratio_threshold = self.params.get('volatility_ratio_threshold', 0.6)
+        self.log(f"Initialized with squeeze_window={self.squeeze_window}")
 
-    def add_indicators(self):
-        # This strategy calculates volatility dynamically, no standard indicators needed upfront.
-        pass
+    def calculate_indicators(self):
+        tf_string = f'{self.primary_timeframe}min'
+        self.df = self.raw_df.resample(tf_string).agg(
+            {'open': 'first', 'high': 'max', 'low': 'min', 'close': 'last', 'volume': 'sum'}
+        ).dropna()
+        self.log("Data resampled.")
 
     def generate_signals(self):
-        """
-        Detects a contracting range (triangle) and trades the breakout.
-        """
         df = self.df
-        # Initialize boolean signal columns
-        df['signal_long'] = False
-        df['signal_short'] = False
-        df['stop_loss'] = np.nan
-        df['target'], df['target2'], df['target3'] = np.nan, np.nan, np.nan
-        
-        # Ensure we have enough data to perform the comparison
         if len(df) < self.historical_window + self.squeeze_window:
-            return
+            self.log("Not enough data for signal generation.", level='warning')
+            return None
 
-        # Define the time windows for comparison
-        recent_candles = df.iloc[-self.squeeze_window:]
-        historical_candles = df.iloc[-(self.historical_window + self.squeeze_window):-self.squeeze_window]
+        atr_hist = df['high'].rolling(self.historical_window).max() - df['low'].rolling(self.historical_window).min()
+        atr_squeeze = df['high'].rolling(self.squeeze_window).max() - df['low'].rolling(self.squeeze_window).min()
+        is_squeeze = atr_squeeze < (atr_hist.shift(self.squeeze_window) * self.volatility_ratio_threshold)
+        breakout_high = df['high'].rolling(self.squeeze_window).max().shift(1)
+        breakout_low = df['low'].rolling(self.squeeze_window).min().shift(1)
+
+        # Step 1: Generate boolean conditions
+        long_cond = is_squeeze & (df['close'] > breakout_high)
+        short_cond = is_squeeze & (df['close'] < breakout_low)
+
+        # Step 2: Calculate Stop Loss
+        df['stop_loss'] = np.nan
+        df.loc[long_cond, 'stop_loss'] = breakout_low
+        df.loc[short_cond, 'stop_loss'] = breakout_high
         
-        # Calculate the average true range for both periods
-        recent_avg_range = (recent_candles['high'] - recent_candles['low']).mean()
-        historical_avg_range = (historical_candles['high'] - historical_candles['low']).mean()
-        
-        # If recent volatility is significantly less than historical, a squeeze is identified
-        is_squeeze = recent_avg_range < (historical_avg_range * self.volatility_ratio_threshold)
-        
-        if is_squeeze:
-            breakout_high = recent_candles['high'].max()
-            breakout_low = recent_candles['low'].min()
-            current_close = df['close'].iloc[-1]
-            
-            # Check for a breakout from this contracted range
-            if current_close > breakout_high:
-                df.at[df.index[-1], 'signal_long'] = True # Set boolean signal
-                sl = breakout_low
-                risk = current_close - sl
-                if risk > 0:
-                    df.at[df.index[-1], 'stop_loss'] = sl
-                    df.at[df.index[-1], 'target'] = current_close + (risk * 1.5)
-                    df.at[df.index[-1], 'target2'] = current_close + (risk * 2.5)
-                    df.at[df.index[-1], 'target3'] = current_close + (risk * 4.5)
-                    self.log(f"APEX Breakout LONG for {self.symbol} at {current_close:.2f}", "warning")
-                
-            elif current_close < breakout_low:
-                df.at[df.index[-1], 'signal_short'] = True # Set boolean signal
-                sl = breakout_high
-                risk = sl - current_close
-                if risk > 0:
-                    df.at[df.index[-1], 'stop_loss'] = sl
-                    df.at[df.index[-1], 'target'] = current_close - (risk * 1.5)
-                    df.at[df.index[-1], 'target2'] = current_close - (risk * 2.5)
-                    df.at[df.index[-1], 'target3'] = current_close - (risk * 4.5)
-                    self.log(f"APEX Breakout SHORT for {self.symbol} at {current_close:.2f}", "warning")
+        # Step 3: Return conditions
+        return {'long_cond': long_cond, 'short_cond': short_cond}

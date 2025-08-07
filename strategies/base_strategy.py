@@ -1,56 +1,65 @@
 # strategies/base_strategy.py
+# UNIVERSAL TEMPLATE: Compatible with both Backtesting and Paper Trading engines.
 
 import pandas as pd
+import numpy as np
 import logging
-from typing import Optional, Dict, Any
+from typing import Optional
 
 class BaseStrategy:
-    """
-    Standardized base for all trading strategies.
-    Adds versioning and config for audit/reproducibility.
-    """
+    def __init__(self, df: pd.DataFrame, symbol: Optional[str] = None, logger=None, 
+                 primary_timeframe: Optional[int] = None, **kwargs):
+        self.name = self.__class__.__name__
+        self.symbol = symbol
+        self.primary_timeframe = primary_timeframe
+        self.raw_df = df 
+        self.df = pd.DataFrame() 
+        self.logger = logger or logging.getLogger(__name__)
+        self.params = kwargs
 
-    def __init__(
-        self,
-        df: pd.DataFrame,
-        df_15min: Optional[pd.DataFrame] = None,
-        symbol: Optional[str] = None,
-        logger: Optional[logging.Logger] = None,
-        primary_timeframe: int = 5,                # <--- Added!
-        config_dict: Optional[Dict[str, Any]] = None,
-        strategy_version: Optional[str] = None,
-        **kwargs
-    ):
-        self.name: str = self.__class__.__name__
-        self.symbol: Optional[str] = symbol
-        self.df: pd.DataFrame = df
-        self.df_1min_raw: pd.DataFrame = df
-        self.df_15min: Optional[pd.DataFrame] = df_15min
-        self.logger: logging.Logger = logger or logging.getLogger(__name__)
-        self.config_dict: Dict[str, Any] = config_dict or {}
-        self.strategy_version: str = strategy_version or "v1.0"
-        self.primary_timeframe: int = primary_timeframe      # <--- Added!
-
-    # ... rest as before ...
-
-    def log(self, message: str, level: str = 'info') -> None:
+    def log(self, message: str, level: str = 'info'):
         if self.logger:
-            if level == 'info':
-                self.logger.info(f"[{self.name}][{self.symbol}] {message}")
-            elif level == 'debug':
-                self.logger.debug(f"[{self.name}][{self.symbol}] {message}")
-            elif level == 'warning':
-                self.logger.warning(f"[{self.name}][{self.symbol}] {message}")
-            elif level == 'error':
-                self.logger.error(f"[{self.name}][{self.symbol}] {message}")
+            log_func = getattr(self.logger, level, self.logger.info)
+            log_func(f"[{self.name}][{self.symbol}] {message}")
 
-    def calculate_indicators(self) -> None:
-        raise NotImplementedError("Each strategy must implement 'calculate_indicators'")
+    def calculate_indicators(self):
+        raise NotImplementedError(f"'calculate_indicators' must be implemented in {self.name}")
 
-    def generate_signals(self) -> None:
-        raise NotImplementedError("Each strategy must implement 'generate_signals'")
+    def generate_signals(self):
+        """
+        Child strategies must implement this.
+        It should return a DataFrame with 'long_cond' and 'short_cond' (boolean) columns.
+        """
+        raise NotImplementedError(f"'generate_signals' must be implemented in {self.name}")
+
+    def get_signal_df(self, long_cond, short_cond) -> pd.DataFrame:
+        """
+        UNIVERSAL METHOD: Generates all required signal formats.
+        """
+        df = self.df
+        
+        # 1. Boolean signals for Backtester
+        df['entries'] = long_cond
+        df['exits'] = short_cond
+        
+        # 2. String signals for Paper Trading Engine
+        df['entry_signal'] = 'NONE'
+        df.loc[long_cond, 'entry_signal'] = 'LONG'
+        df.loc[short_cond, 'entry_signal'] = 'SHORT'
+        
+        # 3. Stop Loss and Target (must be calculated in child strategy)
+        if 'stop_loss' not in df.columns: df['stop_loss'] = np.nan
+        if 'target' not in df.columns: df['target'] = np.nan
+        
+        return df
 
     def run(self) -> pd.DataFrame:
         self.calculate_indicators()
-        self.generate_signals()
-        return self.df
+        if not self.df.empty:
+            # generate_signals ab sirf conditions return karega
+            conditions = self.generate_signals()
+            if conditions is not None:
+                long_cond, short_cond = conditions['long_cond'], conditions['short_cond']
+                # get_signal_df final DataFrame banayega
+                return self.get_signal_df(long_cond, short_cond)
+        return pd.DataFrame()

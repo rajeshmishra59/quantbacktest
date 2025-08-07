@@ -1,87 +1,58 @@
-# File: strategies/sankhyaek_strategy.py (Final Guaranteed Code)
+# File: strategies/sankhyaek_strategy.py
+# UPDATED for Universal Base Strategy Template
 
 import pandas as pd
-import numpy as np  # <-- यह लाइन 'from numpy import NaN' नहीं होनी चाहिए
+import numpy as np
 import pandas_ta as ta
-from datetime import time
-from typing import Optional
 from strategies.base_strategy import BaseStrategy
-
+from typing import Optional
 
 class SankhyaEkStrategy(BaseStrategy):
-    def __init__(self, df: pd.DataFrame, symbol: Optional[str] = None, logger=None, 
-                 primary_timeframe: int = 5, **kwargs):
-
-        super().__init__(df, symbol=symbol, logger=logger, primary_timeframe=primary_timeframe)
+    def __init__(self, df: pd.DataFrame, symbol: Optional[str] = None, logger=None, **kwargs):
+        super().__init__(df, symbol=symbol, logger=logger, **kwargs)
         self.name = "SankhyaEkStrategy"
-        self.bb_length, self.bb_std, self.rsi_period = 20, 2.0, 14
-        self.rsi_oversold, self.rsi_overbought = 45, 55
-        self.stop_loss_pct, self.risk_reward_ratio = 0.005, 2.0
-        self.max_trades_per_day, self.last_trade_date, self.signals_today = 3, None, 0
-        self.trade_stop_time = time(14, 45)
-        self.log(f"Initialized for {self.symbol} with {self.primary_timeframe}-min TF.")
+        self.bb_length = self.params.get('bb_length', 20)
+        self.bb_std = self.params.get('bb_std', 2.0)
+        self.rsi_period = self.params.get('rsi_period', 14)
+        self.rsi_oversold = self.params.get('rsi_oversold', 45)
+        self.rsi_overbought = self.params.get('rsi_overbought', 55)
+        self.stop_loss_pct = self.params.get('stop_loss_pct', 0.005)
+        self.risk_reward_ratio = self.params.get('risk_reward_ratio', 2.0)
+        self.max_trades_per_day = self.params.get('max_trades_per_day', 3)
 
     def calculate_indicators(self):
-        if self.df_1min_raw.empty:
-            self.log("Raw 1-minute data is empty.", level='warning')
-            return
-
-        tf_string = f'{self.primary_timeframe}T'
-        resampled_df = self.df_1min_raw.resample(tf_string).agg(
+        tf_string = f'{self.primary_timeframe}min'
+        resampled_df = self.raw_df.resample(tf_string).agg(
             {'open':'first', 'high':'max', 'low':'min', 'close':'last', 'volume':'sum'}
         ).dropna()
-
-        if len(resampled_df) < self.bb_length:
-            self.log(f"Not enough data for indicators (need {self.bb_length}, have {len(resampled_df)}).", level='warning')
-            return
-            
+        if len(resampled_df) < self.bb_length: self.df = pd.DataFrame(); return
         resampled_df.ta.bbands(length=self.bb_length, std=self.bb_std, append=True)
         resampled_df.ta.rsi(length=self.rsi_period, append=True)
-        
-        resampled_df.rename(columns={
-            f'BBL_{self.bb_length}_{self.bb_std:.1f}': 'bb_lower',
-            f'BBU_{self.bb_length}_{self.bb_std:.1f}': 'bb_upper',
-            f'RSI_{self.rsi_period}': 'rsi'
-        }, inplace=True, errors='ignore')
-
-        if not all(col in resampled_df.columns for col in ['bb_lower', 'bb_upper', 'rsi']):
-             self.log("Indicator columns missing. Check pandas_ta names.", level='error')
-             return
         self.df = resampled_df
 
     def generate_signals(self):
-        if self.df.empty: return
-
         df = self.df
-        # Initialize boolean signal columns
-        df['signal_long'], df['signal_short'] = False, False
-        df['stop_loss'], df['target'] = np.nan, np.nan
+        if df.empty: return None
+
+        rsi_col = f'RSI_{self.rsi_period}'
+        bbl_col = f'BBl_{self.bb_length}_{self.bb_std:.1f}'
+        bbu_col = f'BBu_{self.bb_length}_{self.bb_std:.1f}'
+        if not all(c in df.columns for c in [rsi_col, bbl_col, bbu_col]): return None
+
+        long_cond = (df['close'] < df[bbl_col]) & (df[rsi_col] < self.rsi_oversold)
+        short_cond = (df['close'] > df[bbu_col]) & (df[rsi_col] > self.rsi_overbought)
+
+        df['stop_loss'] = np.nan
+        df['target'] = np.nan
         
-        latest_timestamp = df.index[-1]
-        current_date, current_time = latest_timestamp.date(), latest_timestamp.time()
+        long_sl = df['close'] * (1 - self.stop_loss_pct)
+        long_target = df['close'] + ((df['close'] - long_sl) * self.risk_reward_ratio)
+        df.loc[long_cond, 'stop_loss'] = long_sl
+        df.loc[long_cond, 'target'] = long_target
 
-        if self.last_trade_date != current_date:
-            self.log(f"New trading day: {current_date}. Resetting counter.")
-            self.signals_today, self.last_trade_date = 0, current_date
-
-        if self.signals_today >= self.max_trades_per_day or current_time >= self.trade_stop_time:
-            return
-
-        candle = df.iloc[-1]
-        close, rsi = candle['close'], candle['rsi']
-        bb_lower, bb_upper = candle['bb_lower'], candle['bb_upper']
-
-        if (close < bb_lower) and (rsi < self.rsi_oversold):
-            sl = close * (1 - self.stop_loss_pct)
-            target = close + ((close - sl) * self.risk_reward_ratio)
-            df.loc[df.index[-1], ['entry_signal', 'stop_loss', 'target']] = ['LONG', sl, target]
-            self.signals_today += 1
-            self.log(f"LONG signal! SL:{sl:.2f}, TGT:{target:.2f} ({self.signals_today}/{self.max_trades_per_day})", level='warning')
-            return
-
-        if (close > bb_upper) and (rsi > self.rsi_overbought):
-            sl = close * (1 + self.stop_loss_pct)
-            target = close - ((sl - close) * self.risk_reward_ratio)
-            df.loc[df.index[-1], ['entry_signal', 'stop_loss', 'target']] = ['SHORT', sl, target]
-            self.signals_today += 1
-            self.log(f"SHORT signal! SL:{sl:.2f}, TGT:{target:.2f} ({self.signals_today}/{self.max_trades_per_day})", level='warning')
+        short_sl = df['close'] * (1 + self.stop_loss_pct)
+        short_target = df['close'] - ((short_sl - df['close']) * self.risk_reward_ratio)
+        df.loc[short_cond, 'stop_loss'] = short_sl
+        df.loc[short_cond, 'target'] = short_target
+        
+        return {'long_cond': long_cond, 'short_cond': short_cond}

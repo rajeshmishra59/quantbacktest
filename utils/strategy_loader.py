@@ -1,23 +1,37 @@
 # quant_backtesting_project/utils/strategy_loader.py
-# Yeh utility strategies folder se signal generation functions ko dynamically load karegi.
+# CORRECTED: More robust loading for class-based strategies.
 
 import importlib
+import inspect
+from strategies.base_strategy import BaseStrategy
 
-def load_strategy_signal_generator(strategy_name: str):
+def load_strategy(strategy_name: str):
     """
-    Strategy ke naam se uski signal generation file aur function ko load karta hai.
-    
-    Convention: Har strategy ke liye 'strategies' folder mein ek file honi chahiye
-    jiska naam '{strategy_name}_signals.py' ho aur uske andar ek function
-    'generate_signals' ho.
+    Strategy ke naam se uski class ya signal generation function ko load karta hai.
+    File ka naam strategy ke naam se match hona chahiye (e.g., 'trend' -> 'trend_strategy.py').
     """
     try:
-        module_path = f"strategies.{strategy_name}_signals"
-        strategy_module = importlib.import_module(module_path)
+        # Module ka naam strategy ke naam se banayein
+        module_name = f"strategies.{strategy_name.lower()}_strategy"
+        strategy_module = importlib.import_module(module_name)
         
-        # Har module se 'generate_signals' function ko return karein
-        return getattr(strategy_module, 'generate_signals')
-    except (ImportError, AttributeError) as e:
-        print(f"Error loading strategy '{strategy_name}': {e}")
-        return None
+        # Module ke andar BaseStrategy se inherit hui class ko dhoondhein
+        for name, obj in inspect.getmembers(strategy_module, inspect.isclass):
+            if issubclass(obj, BaseStrategy) and obj is not BaseStrategy:
+                print(f"Successfully loaded CLASS strategy: {name}")
+                return obj # Class ko return karein
 
+    except ImportError as e:
+        print(f"Error loading strategy '{strategy_name}': {e}")
+        # Function-based strategies ke liye fallback (agar zaroorat pade)
+        try:
+            func_module_name = f"strategies.{strategy_name.lower()}_signals"
+            strategy_module = importlib.import_module(func_module_name)
+            if hasattr(strategy_module, 'generate_signals'):
+                print(f"Successfully loaded FUNCTION strategy: {strategy_name}")
+                return getattr(strategy_module, 'generate_signals')
+        except ImportError:
+            pass # Agar function bhi na mile to neeche error aa jayega
+
+    print(f"Could not find a valid class or function for strategy '{strategy_name}'.")
+    return None

@@ -1,21 +1,29 @@
 # quant_backtesting_project/utils/results_db.py
-# Yeh module backtest ke saare results ko ek alag database mein save karega.
+# UPDATED: Now appends results to the existing database instead of deleting it.
 
 import sqlite3
 import pandas as pd
 import json
+import os
 from datetime import datetime
 
 # config.py se DB_PATH import karein.
-import sys, os
+import sys
 project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(project_root)
-from config import RESULTS_DB_PATH # Hum config mein ek naya path add karenge
+from config import RESULTS_DB_PATH
 
 def init_results_db():
     """
     Results database aur zaroori tables banata hai.
+    Ab yeh purani DB file ko delete NAHI karega.
     """
+    # --- YAHAN BADLAV KIYA GAYA HAI ---
+    # Purani database ko delete karne wala code hata diya gaya hai.
+    # if os.path.exists(RESULTS_DB_PATH):
+    #     os.remove(RESULTS_DB_PATH)
+    #     print(f"Removed old results database at: {RESULTS_DB_PATH}")
+
     with sqlite3.connect(RESULTS_DB_PATH) as con:
         # Har backtest run ki metadata store karne ke liye
         con.execute("""
@@ -39,30 +47,25 @@ def init_results_db():
                 entry_timestamp TEXT,
                 exit_timestamp TEXT,
                 symbol TEXT,
-                pnl REAL,
-                FOREIGN KEY (run_id) REFERENCES backtest_runs (run_id)
+                pnl REAL
             )
         """)
-    print(f"Results database initialized at: {RESULTS_DB_PATH}")
+    print(f"Results database verified/initialized at: {RESULTS_DB_PATH}")
 
 def save_backtest_results(run_id: str, run_metadata: dict, trade_log: list, performance_summary: dict):
     """
     Ek poore backtest run ke results ko database mein save karta hai.
     """
     with sqlite3.connect(RESULTS_DB_PATH) as con:
-        # 1. Metadata save karein
         meta_df = pd.DataFrame([run_metadata])
         meta_df.to_sql('backtest_runs', con, if_exists='append', index=False)
         
-        # 2. Trades save karein
         if trade_log:
             trades_df = pd.DataFrame(trade_log)
-            trades_df['run_id'] = run_id # Har trade mein run_id jodein
+            trades_df['run_id'] = run_id
             trades_df.to_sql('trade_logs', con, if_exists='append', index=False)
             
     print(f"Successfully saved results for run_id: {run_id}")
 
-# Pehli baar chalane ke liye DB initialize karein
 if __name__ == '__main__':
     init_results_db()
-
