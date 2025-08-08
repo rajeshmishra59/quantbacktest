@@ -1,74 +1,197 @@
 # quantbacktest/analysis_dashboard.py
-# A new tool to analyze and compare all backtest results from the database.
+# FINAL UPGRADE: Ek professional-grade interactive analysis tool.
 
 import streamlit as st
 import pandas as pd
+import numpy as np
 import sqlite3
 import json
 import os
+import plotly.express as px
+import plotly.graph_objects as go
 
-from config import RESULTS_DB_PATH
+# config.py se zaroori variables import karein
+from config import RESULTS_DB_PATH, INITIAL_CASH
 
-st.set_page_config(page_title="Backtest Analysis Dashboard", layout="wide")
+st.set_page_config(page_title="Formula 1 Analysis", layout="wide")
 
-st.title("🚀 Backtest Analysis Dashboard")
+st.title("🚀 Formula 1 - Advanced Backtest Analysis")
+st.markdown("Yahan aap apne sabhi backtest results ka gehraai se vishleshan kar sakte hain.")
 
-if not os.path.exists(RESULTS_DB_PATH):
-    st.error(f"Database file not found at: {RESULTS_DB_PATH}")
+# --- Database Connection ---
+@st.cache_data(ttl=300) # Data ko 5 minute ke liye cache karein
+def load_all_data_from_db():
+    """Database se backtest runs aur unke saare trades ko load karta hai."""
+    if not os.path.exists(RESULTS_DB_PATH):
+        return None, None
+    try:
+        with sqlite3.connect(RESULTS_DB_PATH) as con:
+            runs_df = pd.read_sql_query("SELECT * FROM backtest_runs", con)
+            trades_df = pd.read_sql_query("SELECT * FROM trade_logs", con, parse_dates=['entry_timestamp', 'exit_timestamp'])
+        return runs_df, trades_df
+    except sqlite3.Error:
+        # Agar table maujood na ho to empty DataFrames return karein
+        return pd.DataFrame(), pd.DataFrame()
+
+
+runs_df, trades_df = load_all_data_from_db()
+
+# --- CORRECTED & ROBUST DATA CHECK ---
+if runs_df is None or trades_df is None:
+    st.error(f"Database file not found at: {RESULTS_DB_PATH}. Kripya pehle backtest runner chalayein.")
     st.stop()
 
-@st.cache_data
-def load_results():
-    """Loads all backtest runs from the database."""
-    with sqlite3.connect(RESULTS_DB_PATH) as con:
-        df = pd.read_sql_query("SELECT * FROM backtest_runs", con)
-    return df
-
-results_df = load_results()
-
-if results_df.empty:
-    st.warning("No backtest results found in the database yet.")
+if runs_df.empty:
+    st.warning("Database mein abhi tak koi backtest results nahi hain.")
     st.stop()
 
 # --- Data Processing ---
-# Performance summary (JSON string) ko alag-alag columns mein convert karein
-perf_summary_list = []
-for summary_str in results_df['performance_summary']:
-    try:
-        perf_summary_list.append(json.loads(summary_str))
-    except (json.JSONDecodeError, TypeError):
-        perf_summary_list.append({})
+perf_summary_list = [json.loads(s) for s in runs_df['performance_summary'] if s]
+if not perf_summary_list:
+    st.warning("Performance data corrupt ya missing hai. Kuch runs table mein nahi dikhenge.")
+    perf_df = pd.DataFrame()
+else:
+    perf_df = pd.DataFrame(perf_summary_list)
 
-perf_df = pd.DataFrame(perf_summary_list)
+analysis_df = pd.concat([runs_df.drop(columns=['performance_summary']), perf_df], axis=1).dropna(subset=['strategy_name'])
 
-# Original DataFrame ke saath jodein
-analysis_df = pd.concat([results_df.drop(columns=['performance_summary']), perf_df], axis=1)
+# --- YAHAN BADLAV KIYA GAYA HAI: Infinite values ko handle karein ---
+analysis_df.replace([np.inf, -np.inf], np.nan, inplace=True)
 
-# --- Dashboard Display ---
-st.header("All Backtest Runs")
 
-# Columns ko aache se arrange karein
-display_cols = [
-    'strategy_name', 'symbol', 'timeframe', 'Total Return %', 'Max Drawdown %',
-    'Win Rate %', 'Profit Factor', 'Total Trades', 'Total PnL',
-    'start_date', 'end_date', 'run_timestamp'
-]
-# Ensure all display columns exist, fill with None if not
-for col in display_cols:
-    if col not in analysis_df.columns:
-        analysis_df[col] = None
+# --- Sidebar for Granular Controls ---
+st.sidebar.header("🔬 Analysis Controls")
 
-st.dataframe(analysis_df[display_cols].sort_values(by='Total Return %', ascending=False), use_container_width=True)
+strategies = ['All'] + sorted(analysis_df['strategy_name'].unique().tolist())
+symbols = ['All'] + sorted(analysis_df['symbol'].unique().tolist())
+timeframes = ['All'] + sorted(analysis_df['timeframe'].unique().tolist())
 
-st.header("Strategy Performance Summary")
+selected_strategies = st.sidebar.multiselect("Strategies Chunein:", strategies, default=['All'])
+selected_symbols = st.sidebar.multiselect("Symbols Chunein:", symbols, default=['All'])
+selected_timeframes = st.sidebar.multiselect("Timeframes Chunein:", timeframes, default=['All'])
 
-# Strategy ke hisaab se results ko group karein
-strategy_summary = analysis_df.groupby('strategy_name').agg(
-    Avg_Return_pct=('Total Return %', 'mean'),
-    Avg_Win_Rate_pct=('Win Rate %', 'mean'),
-    Avg_Profit_Factor=('Profit Factor', 'mean'),
-    Total_Runs=('run_id', 'count')
-).sort_values(by='Avg_Return_pct', ascending=False)
+# Filter logic
+filtered_df = analysis_df.copy()
+if 'All' not in selected_strategies:
+    filtered_df = filtered_df[filtered_df['strategy_name'].isin(selected_strategies)]
+if 'All' not in selected_symbols:
+    filtered_df = filtered_df[filtered_df['symbol'].isin(selected_symbols)]
+if 'All' not in selected_timeframes:
+    filtered_df = filtered_df[filtered_df['timeframe'].isin(selected_timeframes)]
 
-st.dataframe(strategy_summary.style.format("{:.2f}"), use_container_width=True)
+if filtered_df.empty:
+    st.warning("Aapke chune gaye filters ke liye koi data nahi mila. Kripya apne selection ko badlein.")
+    st.stop()
 
+selected_run_ids = filtered_df['run_id'].tolist()
+selected_trades_df = trades_df[trades_df['run_id'].isin(selected_run_ids)] if not trades_df.empty else pd.DataFrame()
+
+
+# --- Main Dashboard with Tabs ---
+tab1, tab2, tab3 = st.tabs(["📊 Performance Overview", "📈 Equity Curves", "📋 Trade Analysis"])
+
+with tab1:
+    st.header("Performance Metrics")
+    st.markdown("Chune gaye backtest runs ke mukhya performance metrics.")
+    
+    display_cols = [
+        'strategy_name', 'symbol', 'timeframe', 'Total Return %', 'Max Drawdown %', 
+        'Win Rate %', 'Profit Factor', 'Sharpe Ratio', 'Total Trades', 'Total PnL'
+    ]
+    for col in display_cols:
+        if col not in filtered_df.columns: filtered_df[col] = 'N/A'
+        
+    # --- YAHAN BADLAV KIYA GAYA HAI: Numbers ko format karein ---
+    st.dataframe(
+        filtered_df[display_cols]
+        .sort_values(by='Total Return %', ascending=False)
+        .style.format({
+            "Total Return %": "{:.2f}",
+            "Max Drawdown %": "{:.2f}",
+            "Win Rate %": "{:.2f}",
+            "Profit Factor": "{:.2f}",
+            "Sharpe Ratio": "{:.2f}",
+            "Total PnL": "{:,.2f}"
+        }, na_rep="No Loss"), # Infinite values ab 'No Loss' dikhenge
+        use_container_width=True
+    )
+
+    st.header("🔥 Performance Heatmap")
+    st.markdown("Ek nazar mein dekhein kaun si strategy-symbol jodi sabse behtar hai (Total Return % ke adhaar par).")
+
+    if not filtered_df.empty and 'Total Return %' in filtered_df.columns:
+        heatmap_data = filtered_df.pivot_table(
+            index='strategy_name', 
+            columns='symbol', 
+            values='Total Return %'
+        )
+        if not heatmap_data.empty:
+            fig_heatmap = px.imshow(
+                heatmap_data,
+                text_auto=True,  # Enable text display
+                aspect="auto",
+                color_continuous_scale='RdYlGn',
+                title="Strategy vs. Symbol Heatmap (Total Return %)"
+            )
+            fig_heatmap.update_traces(texttemplate='%{z:.2f}')  # Format numbers to 2 decimal places
+            st.plotly_chart(fig_heatmap, use_container_width=True)
+        else:
+            st.info("Heatmap banane ke liye paryaapt data nahi hai.")
+
+with tab2:
+    st.header("Equity Curve Comparison")
+    st.markdown("Chune gaye runs ki equity curve ki tulna.")
+
+    fig_equity = go.Figure()
+    if not trades_df.empty:
+        for _, row in filtered_df.iterrows():
+            run_id = row['run_id']
+            display_name = f"{row['strategy_name']} on {row['symbol']} ({row['timeframe']})"
+            run_trades = trades_df[trades_df['run_id'] == run_id].sort_values(by='exit_timestamp')
+            if not run_trades.empty:
+                run_trades['equity'] = INITIAL_CASH + run_trades['pnl'].cumsum()
+                fig_equity.add_trace(go.Scatter(
+                    x=run_trades['exit_timestamp'], 
+                    y=run_trades['equity'], 
+                    mode='lines', 
+                    name=display_name
+                ))
+    
+    fig_equity.update_layout(
+        title="Equity Curve Comparison",
+        xaxis_title='Date', 
+        yaxis_title='Portfolio Equity (₹)', 
+        legend_title='Backtest Runs'
+    )
+    st.plotly_chart(fig_equity, use_container_width=True)
+
+with tab3:
+    st.header("Individual Trade Analysis")
+    
+    if selected_trades_df.empty:
+        st.warning("Chune gaye runs ke liye koi trades nahi mile.")
+    else:
+        st.markdown("Har trade se hone waale profit aur loss ka vitran.")
+        fig_pnl_dist = px.histogram(
+            selected_trades_df, 
+            x="pnl", 
+            nbins=100,
+            title="PnL Distribution of All Trades",
+            labels={'pnl': 'Profit/Loss per Trade (₹)'}
+        )
+        st.plotly_chart(fig_pnl_dist, use_container_width=True)
+
+    st.header("Detailed Trade Logs")
+    st.markdown("Har run ke liye saare individual trades ki jaankari.")
+    
+    if not trades_df.empty:
+        for _, row in filtered_df.iterrows():
+            run_id = row['run_id']
+            display_name = f"{row['strategy_name']} on {row['symbol']} ({row['timeframe']})"
+            with st.expander(f"Trades for: {display_name}"):
+                run_trades = trades_df[trades_df['run_id'] == run_id].copy()
+                if run_trades.empty:
+                    st.write("Is run mein koi trade nahi hua.")
+                else:
+                    run_trades['pnl'] = run_trades['pnl'].round(2)
+                    st.dataframe(run_trades[['entry_timestamp', 'exit_timestamp', 'pnl']], use_container_width=True)
