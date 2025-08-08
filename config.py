@@ -1,5 +1,5 @@
 # quant_backtesting_project/config.py
-# UPGRADED: Ab ismein strategy optimization ke liye ek dedicated section hai.
+# FINAL VERSION: Ismein sabhi strategies ke liye Walk-Forward aur Optimization settings hain.
 
 import os
 import numpy as np
@@ -36,16 +36,22 @@ MAX_DAILY_LOSS_PCT = 0.05
 BROKERAGE_PCT = 0.05
 SLIPPAGE_PCT = 0.02
 
-# --- STRATEGY OPTIMIZATION CONFIG ---
-# Yahan hum har strategy ke liye parameters ki range define karte hain.
-# Runner inhi ranges ka istemaal karke alag-alag combinations banayega.
-# np.arange(start, stop, step) ka istemaal range banane ke liye kiya gaya hai.
+# --- WALK-FORWARD OPTIMIZATION CONFIG ---
+# Yahan hum Walk-Forward analysis ke niyam tay karte hain.
+WALK_FORWARD_CONFIG = {
+    "enabled": True,
+    "training_period_months": 24, # 24 mahine ke data par best parameters dhoondhega
+    "testing_period_months": 6,   # Agle 6 mahine ke andekhe data par unhe test karega
+    "optimization_metric": "Sharpe Ratio" # Best parameter dhoondhne ke liye is metric ka istemaal karega
+}
 
+# --- STRATEGY OPTIMIZATION CONFIG ---
+# Har strategy ke liye "magic numbers" ki testing range.
 STRATEGY_OPTIMIZATION_CONFIG = {
-    "default": {}, # Default parameters agar kisi strategy ke liye config na ho
+    "default": {}, # Agar kisi strategy ka config na ho to default
+    
     "apex": {
-        "squeeze_window": list(np.arange(20, 41, 10)),  # 20, 30, 40
-        "historical_window": [200], # Ise constant rakhte hain
+        "squeeze_window": list(np.arange(20, 61, 20)), # 20, 40, 60
         "volatility_ratio_threshold": list(np.arange(0.5, 0.8, 0.1)) # 0.5, 0.6, 0.7
     },
     "alphaone": {
@@ -54,11 +60,26 @@ STRATEGY_OPTIMIZATION_CONFIG = {
     },
     "sankhyaek":{
         "bb_length": [20],
-        "bb_std": [2.0],
         "rsi_oversold": [30, 40, 45],
         "rsi_overbought": [55, 60, 70]
-    }
-    # Aap yahan aur bhi strategies jod sakte hain...
+    },
+    "numerouno": {
+        "pivot_lookback": [5, 10, 15]
+    },
+    "rangebound": {
+        "bb_length": [20, 30],
+        "stoch_k": [14, 21]
+    },
+    "trend": {
+        "ema_short": [9, 12],
+        "ema_long": [21, 26],
+        "adx_period": [14, 20]
+    },
+    "sma_crossover": { # File ka naam sma_crossover_signals.py hai, isliye 'sma_crossover'
+        "short_window": [10, 20, 30],
+        "long_window": [50, 100]
+    },
+    "test": {} # Iske liye koi optimization nahi
 }
 
-print("Configuration loaded with Optimization settings.")
+print("Configuration loaded with Walk-Forward and Optimization settings for all strategies.")
