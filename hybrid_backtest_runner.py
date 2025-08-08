@@ -1,5 +1,5 @@
 # quant_backtesting_project/hybrid_backtest_runner.py
-# UPGRADED: Ab yeh multiprocessing ka istemaal karke backtests ko parallel mein chalata hai.
+# FINAL UPGRADE: Ab yeh ek parameter optimizer hai jo saare cores ka istemaal karta hai.
 
 import pandas as pd
 import os
@@ -69,115 +69,134 @@ def get_user_inputs():
     
     return symbols, timeframes, strategies, start_date, end_date
 
+def generate_param_combinations(strategy_name):
+    """
+    config.py se ek strategy ke liye saare parameter combinations banata hai.
+    """
+    param_config = config.STRATEGY_OPTIMIZATION_CONFIG.get(strategy_name, config.STRATEGY_OPTIMIZATION_CONFIG['default'])
+    if not param_config:
+        return [{}] # Agar config nahi hai to default params ke saath ek run
+
+    keys, values = zip(*param_config.items())
+    combinations = [dict(zip(keys, v)) for v in itertools.product(*values)]
+    return combinations
+
 def run_backtest_task(task_info):
     """
     Yeh function ek single backtest task ko chalata hai.
     Ise hum parallel mein call karenge.
     """
-    # Task info se saari jaankari nikalein
-    symbol, timeframe, strategy_name, start_date, end_date, strategy_params, position_id = task_info
-    
-    run_id = f"{strategy_name}_{symbol}_{timeframe}_{uuid.uuid4().hex[:8]}"
-    
-    # Har process (worker) ka apna data loader hoga
-    loader = DataLoader()
-    prices_1min_df = loader.fetch_data_for_symbol(symbol, start_date, end_date)
-    if prices_1min_df.empty:
-        # Tqdm ke liye ek dummy message print karein
-        tqdm.write(f"[{position_id}] No data for {symbol}. Skipping.")
-        return
-
-    # Strategy load aur signals generate karein
-    strategy_obj = load_strategy(strategy_name)
-    if strategy_obj is None: return
-
-    if 'H' in timeframe.upper():
-        tf_value = int(''.join(filter(str.isdigit, timeframe))) * 60
-    else:
-        tf_value = int(''.join(filter(str.isdigit, timeframe)) or 1)
-    
-    strategy_instance = strategy_obj(df=prices_1min_df.copy(), symbol=symbol, primary_timeframe=tf_value, **strategy_params)
-    signals_df = strategy_instance.run()
-    if signals_df.empty:
-        tqdm.write(f"[{position_id}] No signals for {strategy_name} on {symbol}. Skipping.")
-        return
-
-    # Portfolio Engine Taiyaar Karein
-    portfolio = UpgradedPortfolio(
-        initial_cash=config.INITIAL_CASH,
-        risk_per_trade_pct=config.RISK_PER_TRADE_PCT,
-        max_daily_loss_pct=config.MAX_DAILY_LOSS_PCT,
-        brokerage_pct=config.BROKERAGE_PCT,
-        slippage_pct=config.SLIPPAGE_PCT
-    )
-
-    # Main Event Loop - Har task ka apna progress bar hoga
-    progress_bar_desc = f"#{position_id}: {strategy_name[:10]} on {symbol[:10]}"
-    
-    # tqdm ka 'position' argument har progress bar ko uski sahi line par rakhta hai
-    for timestamp, candle in tqdm(prices_1min_df.iterrows(), total=len(prices_1min_df), desc=progress_bar_desc, position=position_id):
-        portfolio.on_new_day(timestamp)
-        if portfolio.is_trading_halted_today: continue
-        if symbol in portfolio.positions:
-            portfolio.update_open_positions(timestamp, candle['low'], candle['high'])
-        if timestamp in signals_df.index and signals_df.loc[timestamp]['entries']:
-            signal_row = signals_df.loc[timestamp]
-            portfolio.request_trade(timestamp, symbol, 'buy', candle['open'], signal_row.get('stop_loss'), signal_row.get('target'))
-        elif timestamp in signals_df.index and signals_df.loc[timestamp]['exits']:
-             if symbol in portfolio.positions:
-                portfolio.request_trade(timestamp, symbol, 'sell', candle['open'])
-        current_prices = pd.Series({symbol: candle['close']})
-        portfolio.record_equity(timestamp, current_prices)
-
-    # Backtest ke baad Final Hisaab-Kitaab
-    if symbol in portfolio.positions:
-        last_price = prices_1min_df.iloc[-1]['close']
-        portfolio.request_trade(prices_1min_df.index[-1], symbol, 'sell', last_price)
-    
-    performance_summary = calculate_performance_metrics(pd.DataFrame(portfolio.trade_log), portfolio.equity_df, config.INITIAL_CASH)
-
-    run_metadata = {
-        "run_id": run_id, "run_timestamp": datetime.now().isoformat(),
-        "strategy_name": strategy_name, "symbol": symbol, "timeframe": timeframe,
-        "start_date": start_date, "end_date": end_date,
-        "strategy_params": json.dumps(strategy_params),
-        "performance_summary": json.dumps(performance_summary)
-    }
-    
-    # DB mein save karein
+    # Default values for robust error message
+    symbol, timeframe, strategy_name = None, None, None
     try:
+        # Task info se saari jaankari nikalein
+        symbol, timeframe, strategy_name, start_date, end_date, strategy_params, data_df = task_info
+        
+        run_id = f"{strategy_name}_{symbol}_{timeframe}_{uuid.uuid4().hex[:8]}"
+        
+        prices_1min_df = data_df.copy()
+        if prices_1min_df.empty: return
+
+        strategy_obj = load_strategy(strategy_name)
+        if strategy_obj is None: return
+
+        if 'H' in timeframe.upper():
+            tf_value = int(''.join(filter(str.isdigit, timeframe))) * 60
+        else:
+            tf_value = int(''.join(filter(str.isdigit, timeframe)) or 1)
+        
+        strategy_instance = strategy_obj(df=prices_1min_df, symbol=symbol, primary_timeframe=tf_value, **strategy_params)
+        signals_df = strategy_instance.run()
+        if signals_df.empty: return
+
+        # --- SPEED OPTIMIZATION ---
+        prices_1min_df = prices_1min_df.join(signals_df[['entries', 'exits', 'stop_loss', 'target']])
+        prices_1min_df[['entries', 'exits']] = prices_1min_df[['entries', 'exits']].fillna(False)
+        # --- END OF OPTIMIZATION ---
+
+        portfolio = UpgradedPortfolio(
+            initial_cash=config.INITIAL_CASH,
+            risk_per_trade_pct=config.RISK_PER_TRADE_PCT,
+            max_daily_loss_pct=config.MAX_DAILY_LOSS_PCT,
+            brokerage_pct=config.BROKERAGE_PCT,
+            slippage_pct=config.SLIPPAGE_PCT
+        )
+
+        # Main Event Loop
+        for candle in prices_1min_df.itertuples():
+            timestamp = candle.Index
+            portfolio.on_new_day(timestamp)
+            if portfolio.is_trading_halted_today: continue
+            if symbol in portfolio.positions:
+                portfolio.update_open_positions(timestamp, candle.low, candle.high)
+            
+            if candle.entries:
+                portfolio.request_trade(timestamp, symbol, 'buy', candle.open, candle.stop_loss, candle.target)
+            elif candle.exits:
+                 if symbol in portfolio.positions:
+                    portfolio.request_trade(timestamp, symbol, 'sell', candle.open)
+            
+            current_prices = pd.Series({symbol: candle.close})
+            portfolio.record_equity(timestamp, current_prices)
+
+        if symbol in portfolio.positions:
+            last_price = prices_1min_df.iloc[-1]['close']
+            portfolio.request_trade(prices_1min_df.index[-1], symbol, 'sell', last_price)
+        
+        performance_summary = calculate_performance_metrics(pd.DataFrame(portfolio.trade_log), portfolio.equity_df, config.INITIAL_CASH)
+
+        run_metadata = {
+            "run_id": run_id, "run_timestamp": datetime.now().isoformat(),
+            "strategy_name": strategy_name, "symbol": symbol, "timeframe": timeframe,
+            "start_date": start_date, "end_date": end_date,
+            "strategy_params": json.dumps(strategy_params),
+            "performance_summary": json.dumps(performance_summary)
+        }
+        
         save_backtest_results(run_id, run_metadata, portfolio.trade_log, performance_summary)
-        tqdm.write(f"--- ✔️ Finished & Saved: {progress_bar_desc} | Return: {performance_summary.get('Total Return %', 'N/A')}% ---")
+    
     except Exception as e:
-        tqdm.write(f"--- ❌ DB Error for {run_id}: {e} ---")
+        tqdm.write(f"ERROR in task {strategy_name}/{symbol}/{timeframe}: {e}")
+        pass
 
 
 if __name__ == '__main__':
-    # Yeh zaroori hai Windows par multiprocessing ke liye
     multiprocessing.freeze_support()
-    
     init_results_db()
     
     symbols_to_run, timeframes_to_run, strategies_to_run, start_date, end_date = get_user_inputs()
     
     if symbols_to_run and start_date and end_date:
-        # 1. Saare possible backtest combinations (tasks) ki ek list banayein
-        all_combinations = list(itertools.product(symbols_to_run, timeframes_to_run, strategies_to_run))
         
-        tasks_with_info = [
-            (*combo, start_date, end_date, {}, i) 
-            for i, combo in enumerate(all_combinations)
-        ]
-        
-        print(f"\nTotal {len(tasks_with_info)} backtest tasks to run in parallel...")
-        
-        # 2. Multiprocessing Pool banayein
-        # Yeh aapke computer ke sabhi available CPU cores ka istemaal karega
-        num_processes = min(os.cpu_count() or 1, len(tasks_with_info))
-        
-        with multiprocessing.Pool(processes=num_processes) as pool:
-            # pool.map har ek task ko 'run_backtest_task' function par chalayega
-            # Har task ek alag CPU core par chalega
-            list(pool.map(run_backtest_task, tasks_with_info))
+        print("\nPre-loading all required data... Please wait.")
+        loader = DataLoader()
+        data_cache = {
+            symbol: loader.fetch_data_for_symbol(symbol, start_date, end_date)
+            for symbol in tqdm(symbols_to_run, desc="Loading Data")
+        }
+        print("Data loading complete.")
 
-    print("\n--- ✅ All Parallel Backtests Complete ---")
+        tasks_with_info = []
+        position_counter = 0
+        for strategy_name in strategies_to_run:
+            param_combos = generate_param_combinations(strategy_name)
+            for symbol in symbols_to_run:
+                for timeframe in timeframes_to_run:
+                    for params in param_combos:
+                        tasks_with_info.append(
+                            (symbol, timeframe, strategy_name, start_date, end_date, params, data_cache[symbol])
+                        )
+                        position_counter += 1
+        
+        print(f"\nTotal {len(tasks_with_info)} optimization tasks to run in parallel...")
+        
+        cpu_count = os.cpu_count() or 1
+        num_processes = min(cpu_count, len(tasks_with_info))
+        if num_processes == 0:
+            print("No tasks to run.")
+            exit()
+            
+        with multiprocessing.Pool(processes=num_processes) as pool:
+            results = list(tqdm(pool.imap_unordered(run_backtest_task, tasks_with_info), total=len(tasks_with_info), desc="Optimizing Strategies"))
+
+    print("\n--- ✅ All Optimization Backtests Complete ---")

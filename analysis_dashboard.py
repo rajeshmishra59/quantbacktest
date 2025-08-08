@@ -55,7 +55,6 @@ else:
 
 analysis_df = pd.concat([runs_df.drop(columns=['performance_summary']), perf_df], axis=1).dropna(subset=['strategy_name'])
 
-# --- YAHAN BADLAV KIYA GAYA HAI: Infinite values ko handle karein ---
 analysis_df.replace([np.inf, -np.inf], np.nan, inplace=True)
 
 
@@ -94,14 +93,14 @@ with tab1:
     st.header("Performance Metrics")
     st.markdown("Chune gaye backtest runs ke mukhya performance metrics.")
     
+    # --- YAHAN BADLAV KIYA GAYA HAI: Parameters column ko jodein ---
     display_cols = [
-        'strategy_name', 'symbol', 'timeframe', 'Total Return %', 'Max Drawdown %', 
+        'strategy_name', 'symbol', 'timeframe', 'strategy_params', 'Total Return %', 'Max Drawdown %', 
         'Win Rate %', 'Profit Factor', 'Sharpe Ratio', 'Total Trades', 'Total PnL'
     ]
     for col in display_cols:
         if col not in filtered_df.columns: filtered_df[col] = 'N/A'
         
-    # --- YAHAN BADLAV KIYA GAYA HAI: Numbers ko format karein ---
     st.dataframe(
         filtered_df[display_cols]
         .sort_values(by='Total Return %', ascending=False)
@@ -112,7 +111,7 @@ with tab1:
             "Profit Factor": "{:.2f}",
             "Sharpe Ratio": "{:.2f}",
             "Total PnL": "{:,.2f}"
-        }, na_rep="No Loss"), # Infinite values ab 'No Loss' dikhenge
+        }, na_rep="No Loss"),
         use_container_width=True
     )
 
@@ -120,20 +119,22 @@ with tab1:
     st.markdown("Ek nazar mein dekhein kaun si strategy-symbol jodi sabse behtar hai (Total Return % ke adhaar par).")
 
     if not filtered_df.empty and 'Total Return %' in filtered_df.columns:
+        # Heatmap ke liye parameters ko bhi index mein shaamil karein (optional, advanced)
+        # Abhi ke liye ise simple rakhte hain
         heatmap_data = filtered_df.pivot_table(
             index='strategy_name', 
             columns='symbol', 
-            values='Total Return %'
+            values='Total Return %',
+            aggfunc='max' # Ek symbol ke liye best result dikhayein
         )
         if not heatmap_data.empty:
             fig_heatmap = px.imshow(
                 heatmap_data,
-                text_auto=True,  # Enable text display
+                text_auto=True,
                 aspect="auto",
                 color_continuous_scale='RdYlGn',
-                title="Strategy vs. Symbol Heatmap (Total Return %)"
+                title="Strategy vs. Symbol Heatmap (Best Return %)"
             )
-            fig_heatmap.update_traces(texttemplate='%{z:.2f}')  # Format numbers to 2 decimal places
             st.plotly_chart(fig_heatmap, use_container_width=True)
         else:
             st.info("Heatmap banane ke liye paryaapt data nahi hai.")
@@ -146,7 +147,9 @@ with tab2:
     if not trades_df.empty:
         for _, row in filtered_df.iterrows():
             run_id = row['run_id']
-            display_name = f"{row['strategy_name']} on {row['symbol']} ({row['timeframe']})"
+            # Display name mein ab parameters bhi dikhayein
+            params_str = row.get('strategy_params', '{}')
+            display_name = f"{row['strategy_name']} on {row['symbol']} ({row['timeframe']}) - Params: {params_str}"
             run_trades = trades_df[trades_df['run_id'] == run_id].sort_values(by='exit_timestamp')
             if not run_trades.empty:
                 run_trades['equity'] = INITIAL_CASH + run_trades['pnl'].cumsum()
@@ -187,7 +190,8 @@ with tab3:
     if not trades_df.empty:
         for _, row in filtered_df.iterrows():
             run_id = row['run_id']
-            display_name = f"{row['strategy_name']} on {row['symbol']} ({row['timeframe']})"
+            params_str = row.get('strategy_params', '{}')
+            display_name = f"{row['strategy_name']} on {row['symbol']} ({row['timeframe']}) - Params: {params_str}"
             with st.expander(f"Trades for: {display_name}"):
                 run_trades = trades_df[trades_df['run_id'] == run_id].copy()
                 if run_trades.empty:
