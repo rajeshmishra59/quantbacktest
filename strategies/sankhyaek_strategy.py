@@ -11,12 +11,13 @@ class SankhyaEkStrategy(BaseStrategy):
     def __init__(self, df: pd.DataFrame, symbol: Optional[str] = None, logger=None, **kwargs):
         super().__init__(df, symbol=symbol, logger=logger, **kwargs)
         self.name = "SankhyaEkStrategy"
-        self.bb_length = self.params.get('bb_length', 20)
-        self.bb_std = self.params.get('bb_std', 2.0)
-        self.rsi_period = self.params.get('rsi_period', 14)
-        self.rsi_oversold = self.params.get('rsi_oversold', 45)
-        self.rsi_overbought = self.params.get('rsi_overbought', 55)
-        self.stop_loss_pct = self.params.get('stop_loss_pct', 0.005)
+        # Tweaked parameters
+        self.bb_length = self.params.get('bb_length', 15)
+        self.bb_std = self.params.get('bb_std', 2.5)
+        self.rsi_period = self.params.get('rsi_period', 10)
+        self.rsi_oversold = self.params.get('rsi_oversold', 25)
+        self.rsi_overbought = self.params.get('rsi_overbought', 75)
+        self.stop_loss_pct = self.params.get('stop_loss_pct', 0.015)  # 1.5%
         self.risk_reward_ratio = self.params.get('risk_reward_ratio', 2.0)
         self.max_trades_per_day = self.params.get('max_trades_per_day', 3)
 
@@ -32,15 +33,21 @@ class SankhyaEkStrategy(BaseStrategy):
 
     def generate_signals(self):
         df = self.df
-        if df.empty: return None
+        if df.empty:
+            return None
 
         rsi_col = f'RSI_{self.rsi_period}'
         bbl_col = f'BBl_{self.bb_length}_{self.bb_std:.1f}'
         bbu_col = f'BBu_{self.bb_length}_{self.bb_std:.1f}'
-        if not all(c in df.columns for c in [rsi_col, bbl_col, bbu_col]): return None
+        if not all(c in df.columns for c in [rsi_col, bbl_col, bbu_col]):
+            return None
 
-        long_cond = (df['close'] < df[bbl_col]) & (df[rsi_col] < self.rsi_oversold)
-        short_cond = (df['close'] > df[bbu_col]) & (df[rsi_col] > self.rsi_overbought)
+        # Add trend filter: 30-period moving average
+        df['ma_trend'] = df['close'].rolling(30).mean()
+
+        # Only go long if price is above trend (uptrend), short if below (downtrend)
+        long_cond = (df['close'] < df[bbl_col]) & (df[rsi_col] < self.rsi_oversold) & (df['close'] > df['ma_trend'])
+        short_cond = (df['close'] > df[bbu_col]) & (df[rsi_col] > self.rsi_overbought) & (df['close'] < df['ma_trend'])
 
         df['stop_loss'] = np.nan
         df['target'] = np.nan

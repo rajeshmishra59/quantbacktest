@@ -37,49 +37,53 @@ BROKERAGE_PCT = 0.05
 SLIPPAGE_PCT = 0.02
 
 # --- WALK-FORWARD OPTIMIZATION CONFIG ---
-# Yahan hum Walk-Forward analysis ke niyam tay karte hain.
 WALK_FORWARD_CONFIG = {
     "enabled": True,
-    "training_period_months": 24, # 24 mahine ke data par best parameters dhoondhega
-    "testing_period_months": 6,   # Agle 6 mahine ke andekhe data par unhe test karega
-    "optimization_metric": "Sharpe Ratio" # Best parameter dhoondhne ke liye is metric ka istemaal karega
+    "training_period_months": 24,
+    "testing_period_months": 6,
+    "optimization_metric": "Sharpe Ratio"
 }
 
 # --- STRATEGY OPTIMIZATION CONFIG ---
-# Har strategy ke liye "magic numbers" ki testing range.
 STRATEGY_OPTIMIZATION_CONFIG = {
-    "default": {}, # Agar kisi strategy ka config na ho to default
-    
+    "default": {},
     "apex": {
-        "squeeze_window": list(np.arange(20, 61, 20)), # 20, 40, 60
-        "volatility_ratio_threshold": list(np.arange(0.5, 0.8, 0.1)) # 0.5, 0.6, 0.7
+        "squeeze_window": [20, 40, 60],
+        "volatility_ratio_threshold": [0.5, 0.6, 0.7]
     },
     "alphaone": {
         "streak_period_min": [6, 8, 10],
+        "strong_candle_ratio": [0.7, 0.8],
+        "volume_spike_multiplier": [1.5, 2.0],
         "tp_rr_ratio": [1.5, 2.0, 2.5]
     },
-    "sankhyaek":{
-        "bb_length": [20],
-        "rsi_oversold": [30, 40, 45],
-        "rsi_overbought": [55, 60, 70]
+    "sankhyaek": {
+        "bb_length": [15, 20, 25],
+        "bb_std": [2.0, 2.5, 3.0],
+        "rsi_period": [10, 12, 14],
+        "rsi_oversold": [20, 25, 30],
+        "rsi_overbought": [70, 75, 80],
+        "stop_loss_pct": [0.01, 0.015, 0.02],
+        "risk_reward_ratio": [1.5, 2.0, 2.5]
     },
     "numerouno": {
         "pivot_lookback": [5, 10, 15]
     },
     "rangebound": {
+        "primary_timeframe": [15],
         "bb_length": [20, 30],
-        "stoch_k": [14, 21]
+        "adx_window": [14, 20]
     },
     "trend": {
         "ema_short": [9, 12],
         "ema_long": [21, 26],
         "adx_period": [14, 20]
     },
-    "sma_crossover": { # File ka naam sma_crossover_signals.py hai, isliye 'sma_crossover'
-        "short_window": [10, 20, 30],
+    "sma_crossover": {
+        "short_window": [10, 20],
         "long_window": [50, 100]
     },
-    "test": {} # Iske liye koi optimization nahi
+    "test": {}
 }
 
 print("Configuration loaded with Walk-Forward and Optimization settings for all strategies.")

@@ -1,0 +1,1397 @@
+{
+    "alphaone_on_AMBUJACEM": {
+        "params": {
+            "streak_period_min": 6,
+            "strong_candle_ratio": 0.7,
+            "volume_spike_multiplier": 1.5,
+            "tp_rr_ratio": 1.5
+        },
+        "sharpe": 0.0,
+        "pnl": 0.0,
+        "trades": 0
+    },
+    "alphaone_on_AUROPHARMA": {
+        "params": {
+            "streak_period_min": 10,
+            "strong_candle_ratio": 0.8,
+            "volume_spike_multiplier": 2.0,
+            "tp_rr_ratio": 2.0
+        },
+        "sharpe": 0.07060297659269024,
+        "pnl": 219390.04868399157,
+        "trades": 25
+    },
+    "alphaone_on_BANKBARODA": {
+        "params": {
+            "streak_period_min": 6,
+            "strong_candle_ratio": 0.7,
+            "volume_spike_multiplier": 1.5,
+            "tp_rr_ratio": 2.0
+        },
+        "sharpe": 0.08479066198186959,
+        "pnl": 294624.806299207,
+        "trades": 13
+    },
+    "alphaone_on_BERGEPAINT": {
+        "params": {
+            "streak_period_min": 6,
+            "strong_candle_ratio": 0.7,
+            "volume_spike_multiplier": 1.5,
+            "tp_rr_ratio": 1.5
+        },
+        "sharpe": 0.02802353678610824,
+        "pnl": 26410.16987476672,
+        "trades": 8
+    },
+    "alphaone_on_CANBK": {
+        "params": {
+            "streak_period_min": 6,
+            "strong_candle_ratio": 0.7,
+            "volume_spike_multiplier": 1.5,
+            "tp_rr_ratio": 1.5
+        },
+        "sharpe": 0.0,
+        "pnl": 0.0,
+        "trades": 0
+    },
+    "alphaone_on_CHOLAFIN": {
+        "params": {
+            "streak_period_min": 8,
+            "strong_candle_ratio": 0.7,
+            "volume_spike_multiplier": 2.0,
+            "tp_rr_ratio": 2.0
+        },
+        "sharpe": 0.08353992419112616,
+        "pnl": 246354.42546844465,
+        "trades": 16
+    },
+    "alphaone_on_DABUR": {
+        "params": {
+            "streak_period_min": 6,
+            "strong_candle_ratio": 0.7,
+            "volume_spike_multiplier": 1.5,
+            "tp_rr_ratio": 2.5
+        },
+        "sharpe": 0.07599455703536862,
+        "pnl": 354649.3165982957,
+        "trades": 2
+    },
+    "alphaone_on_DLF": {
+        "params": {
+            "streak_period_min": 6,
+            "strong_candle_ratio": 0.7,
+            "volume_spike_multiplier": 1.5,
+            "tp_rr_ratio": 1.5
+        },
+        "sharpe": 0.0,
+        "pnl": 0.0,
+        "trades": 0
+    },
+    "alphaone_on_GAIL": {
+        "params": {
+            "streak_period_min": 10,
+            "strong_candle_ratio": 0.8,
+            "volume_spike_multiplier": 2.0,
+            "tp_rr_ratio": 1.5
+        },
+        "sharpe": 0.058861192868452435,
+        "pnl": 252709.5293638042,
+        "trades": 7
+    },
+    "alphaone_on_GODREJCP": {
+        "params": {
+            "streak_period_min": 6,
+            "strong_candle_ratio": 0.8,
+            "volume_spike_multiplier": 2.0,
+            "tp_rr_ratio": 1.5
+        },
+        "sharpe": 0.11199542557137097,
+        "pnl": 1433871.8589508247,
+        "trades": 2
+    },
+    "alphaone_on_ICICIGI": {
+        "params": {
+            "streak_period_min": 10,
+            "strong_candle_ratio": 0.8,
+            "volume_spike_multiplier": 1.5,
+            "tp_rr_ratio": 1.5
+        },
+        "sharpe": 0.08353992419112616,
+        "pnl": 246354.42546844465,
+        "trades": 16
+    },
+    "alphaone_on_ICICIPRULI": {
+        "params": {
+            "streak_period_min": 6,
+            "strong_candle_ratio": 0.7,
+            "volume_spike_multiplier": 1.5,
+            "tp_rr_ratio": 1.5
+        },
+        "sharpe": 0.0,
+        "pnl": 0.0,
+        "trades": 0
+    },
+    "alphaone_on_IDFCFIRSTB": {
+        "params": {
+            "streak_period_min": 6,
+            "strong_candle_ratio": 0.7,
+            "volume_spike_multiplier": 2.0,
+            "tp_rr_ratio": 2.0
+        },
+        "sharpe": 0.07243321105865023,
+        "pnl": 265370.60510098434,
+        "trades": 18
+    },
+    "alphaone_on_IGL": {
+        "params": {
+            "streak_period_min": 6,
+            "strong_candle_ratio": 0.7,
+            "volume_spike_multiplier": 1.5,
+            "tp_rr_ratio": 1.5
+        },
+        "sharpe": 0.06711783277693294,
+        "pnl": 279248.0115690624,
+        "trades": 1
+    },
+    "alphaone_on_INDIGO": {
+        "params": {
+            "streak_period_min": 8,
+            "strong_candle_ratio": 0.7,
+            "volume_spike_multiplier": 1.5,
+            "tp_rr_ratio": 2.5
+        },
+        "sharpe": 0.07475876183961658,
+        "pnl": 296626.0125838682,
+        "trades": 2
+    },
+    "alphaone_on_MUTHOOTFIN": {
+        "params": {
+            "streak_period_min": 10,
+            "strong_candle_ratio": 0.8,
+            "volume_spike_multiplier": 2.0,
+            "tp_rr_ratio": 2.5
+        },
+        "sharpe": 0.048840882058287224,
+        "pnl": 115811.02082422437,
+        "trades": 6
+    },
+    "alphaone_on_NAUKRI": {
+        "params": {
+            "streak_period_min": 6,
+            "strong_candle_ratio": 0.7,
+            "volume_spike_multiplier": 2.0,
+            "tp_rr_ratio": 2.5
+        },
+        "sharpe": 0.0991445257300219,
+        "pnl": 212889.46996786652,
+        "trades": 5
+    },
+    "alphaone_on_UBL": {
+        "params": {
+            "streak_period_min": 10,
+            "strong_candle_ratio": 0.8,
+            "volume_spike_multiplier": 1.5,
+            "tp_rr_ratio": 2.5
+        },
+        "sharpe": 0.01873128169296464,
+        "pnl": 3735.7902148772882,
+        "trades": 18
+    },
+    "alphaone_on_VEDL": {
+        "params": {
+            "streak_period_min": 10,
+            "strong_candle_ratio": 0.8,
+            "volume_spike_multiplier": 2.0,
+            "tp_rr_ratio": 2.5
+        },
+        "sharpe": 0.0952698038919073,
+        "pnl": 668616.6842821359,
+        "trades": 15
+    },
+    "alphaone_on_VOLTAS": {
+        "params": {
+            "streak_period_min": 10,
+            "strong_candle_ratio": 0.7,
+            "volume_spike_multiplier": 1.5,
+            "tp_rr_ratio": 2.5
+        },
+        "sharpe": 0.10666146813247661,
+        "pnl": 1085690.2094492146,
+        "trades": 3
+    },
+    "alphaone_on_HAVELLS": {
+        "params": {
+            "streak_period_min": 6,
+            "strong_candle_ratio": 0.7,
+            "volume_spike_multiplier": 1.5,
+            "tp_rr_ratio": 2.5
+        },
+        "sharpe": 0.06399859801972527,
+        "pnl": 218516.62388522,
+        "trades": 3
+    },
+    "apex_on_ICICIGI": {
+        "params": {
+            "squeeze_window": 60,
+            "volatility_ratio_threshold": 0.7
+        },
+        "sharpe": 0.04451197791869437,
+        "pnl": 86047.02329087259,
+        "trades": 1820
+    },
+    "apex_on_ICICIPRULI": {
+        "params": {
+            "squeeze_window": 20,
+            "volatility_ratio_threshold": 0.6
+        },
+        "sharpe": 0.045798285946021505,
+        "pnl": 90995.2786355811,
+        "trades": 1964
+    },
+    "apex_on_IDFCFIRSTB": {
+        "params": {
+            "squeeze_window": 60,
+            "volatility_ratio_threshold": 0.7
+        },
+        "sharpe": 0.0641265534937929,
+        "pnl": 250166.2358541218,
+        "trades": 1807
+    },
+    "apex_on_IGL": {
+        "params": {
+            "squeeze_window": 40,
+            "volatility_ratio_threshold": 0.5
+        },
+        "sharpe": 0.08165862274821632,
+        "pnl": 494879.61767694243,
+        "trades": 968
+    },
+    "apex_on_INDIGO": {
+        "params": {
+            "squeeze_window": 40,
+            "volatility_ratio_threshold": 0.7
+        },
+        "sharpe": 0.05248051390863108,
+        "pnl": 120382.21287572663,
+        "trades": 453
+    },
+    "apex_on_MUTHOOTFIN": {
+        "params": {
+            "squeeze_window": 60,
+            "volatility_ratio_threshold": 0.7
+        },
+        "sharpe": 0.0707444139110428,
+        "pnl": 310222.06638123404,
+        "trades": 1784
+    },
+    "apex_on_NAUKRI": {
+        "params": {
+            "squeeze_window": 40,
+            "volatility_ratio_threshold": 0.7
+        },
+        "sharpe": 0.07787298217056302,
+        "pnl": 383074.43187130784,
+        "trades": 452
+    },
+    "apex_on_PIDILITIND": {
+        "params": {
+            "squeeze_window": 60,
+            "volatility_ratio_threshold": 0.7
+        },
+        "sharpe": 0.07235499475417069,
+        "pnl": 302442.245941472,
+        "trades": 1862
+    },
+    "apex_on_PNB": {
+        "params": {
+            "squeeze_window": 60,
+            "volatility_ratio_threshold": 0.6
+        },
+        "sharpe": 0.08984463035373208,
+        "pnl": 538835.0949135346,
+        "trades": 672
+    },
+    "apex_on_RECLTD": {
+        "params": {
+            "squeeze_window": 60,
+            "volatility_ratio_threshold": 0.5
+        },
+        "sharpe": 0.03891569130485183,
+        "pnl": 70597.13938002927,
+        "trades": 594
+    },
+    "apex_on_SAIL": {
+        "params": {
+            "squeeze_window": 60,
+            "volatility_ratio_threshold": 0.5
+        },
+        "sharpe": 0.03505241443882533,
+        "pnl": 55666.42262493728,
+        "trades": 597
+    },
+    "apex_on_SRF": {
+        "params": {
+            "squeeze_window": 60,
+            "volatility_ratio_threshold": 0.7
+        },
+        "sharpe": 0.039195120435045756,
+        "pnl": 57014.119489938195,
+        "trades": 1515
+    },
+    "apex_on_TORNTPHARM": {
+        "params": {
+            "squeeze_window": 60,
+            "volatility_ratio_threshold": 0.6
+        },
+        "sharpe": 0.05785721542306842,
+        "pnl": 113727.04980771897,
+        "trades": 561
+    },
+    "apex_on_TVSMOTOR": {
+        "params": {
+            "squeeze_window": 20,
+            "volatility_ratio_threshold": 0.5
+        },
+        "sharpe": 0.0,
+        "pnl": 0.0,
+        "trades": 0
+    },
+    "apex_on_UBL": {
+        "params": {
+            "squeeze_window": 60,
+            "volatility_ratio_threshold": 0.7
+        },
+        "sharpe": 0.06722490105448826,
+        "pnl": 219125.95685144817,
+        "trades": 1649
+    },
+    "apex_on_VEDL": {
+        "params": {
+            "squeeze_window": 40,
+            "volatility_ratio_threshold": 0.6
+        },
+        "sharpe": 0.09529750792634979,
+        "pnl": 489904.9664107106,
+        "trades": 935
+    },
+    "apex_on_VOLTAS": {
+        "params": {
+            "squeeze_window": 60,
+            "volatility_ratio_threshold": 0.7
+        },
+        "sharpe": 0.07474811190252778,
+        "pnl": 360041.82571263623,
+        "trades": 1489
+    },
+    "apex_on_HAVELLS": {
+        "params": {
+            "squeeze_window": 20,
+            "volatility_ratio_threshold": 0.7
+        },
+        "sharpe": 0.06736638558565723,
+        "pnl": 273178.46894491784,
+        "trades": 747
+    },
+    "apex_on_PEL": {
+        "params": {
+            "squeeze_window": 60,
+            "volatility_ratio_threshold": 0.7
+        },
+        "sharpe": 0.09840664130474339,
+        "pnl": 640004.6308164212,
+        "trades": 1668
+    },
+    "apex_on_PAGEIND": {
+        "params": {
+            "squeeze_window": 40,
+            "volatility_ratio_threshold": 0.6
+        },
+        "sharpe": 0.11145710016607492,
+        "pnl": 1099982.4504143829,
+        "trades": 967
+    },
+    "numerouno_on_AMBUJACEM": {
+        "params": {
+            "pivot_lookback": 5
+        },
+        "sharpe": 0.0,
+        "pnl": 0.0,
+        "trades": 0
+    },
+    "numerouno_on_AUROPHARMA": {
+        "params": {
+            "pivot_lookback": 5
+        },
+        "sharpe": 0.0,
+        "pnl": 0.0,
+        "trades": 0
+    },
+    "numerouno_on_BANKBARODA": {
+        "params": {
+            "pivot_lookback": 5
+        },
+        "sharpe": 0.0,
+        "pnl": 0.0,
+        "trades": 0
+    },
+    "numerouno_on_BERGEPAINT": {
+        "params": {
+            "pivot_lookback": 5
+        },
+        "sharpe": 0.0,
+        "pnl": 0.0,
+        "trades": 0
+    },
+    "numerouno_on_CANBK": {
+        "params": {
+            "pivot_lookback": 5
+        },
+        "sharpe": 0.0,
+        "pnl": 0.0,
+        "trades": 0
+    },
+    "numerouno_on_CHOLAFIN": {
+        "params": {
+            "pivot_lookback": 15
+        },
+        "sharpe": 0.07600035346340352,
+        "pnl": 276401.9742803655,
+        "trades": 1826
+    },
+    "numerouno_on_DABUR": {
+        "params": {
+            "pivot_lookback": 15
+        },
+        "sharpe": 0.07169805662307689,
+        "pnl": 239845.75882853233,
+        "trades": 898
+    },
+    "numerouno_on_DLF": {
+        "params": {
+            "pivot_lookback": 5
+        },
+        "sharpe": 0.06879128886460195,
+        "pnl": 219793.16556779813,
+        "trades": 1019
+    },
+    "numerouno_on_GAIL": {
+        "params": {
+            "pivot_lookback": 5
+        },
+        "sharpe": -0.0025185638846910484,
+        "pnl": -19470.466957820885,
+        "trades": 7
+    },
+    "numerouno_on_GODREJCP": {
+        "params": {
+            "pivot_lookback": 10
+        },
+        "sharpe": 0.03479921299642545,
+        "pnl": 51707.113870381916,
+        "trades": 3
+    },
+    "numerouno_on_ICICIGI": {
+        "params": {
+            "pivot_lookback": 5
+        },
+        "sharpe": 0.03479921299642545,
+        "pnl": 51707.113870381916,
+        "trades": 3
+    },
+    "numerouno_on_ICICIPRULI": {
+        "params": {
+            "pivot_lookback": 10
+        },
+        "sharpe": 0.03417771971699573,
+        "pnl": 49724.38197477882,
+        "trades": 3
+    },
+    "numerouno_on_IDFCFIRSTB": {
+        "params": {
+            "pivot_lookback": 10
+        },
+        "sharpe": 0.03607654028818321,
+        "pnl": 49337.85032337994,
+        "trades": 1
+    },
+    "numerouno_on_IGL": {
+        "params": {
+            "pivot_lookback": 5
+        },
+        "sharpe": 0.03607654028818321,
+        "pnl": 49337.85032337994,
+        "trades": 1
+    },
+    "numerouno_on_INDIGO": {
+        "params": {
+            "pivot_lookback": 5
+        },
+        "sharpe": -0.0143042594813732,
+        "pnl": -16539.093683961724,
+        "trades": 1
+    },
+    "numerouno_on_MUTHOOTFIN": {
+        "params": {
+            "pivot_lookback": 5
+        },
+        "sharpe": -0.0143042594813732,
+        "pnl": -16539.093683961724,
+        "trades": 1
+    },
+    "numerouno_on_NAUKRI": {
+        "params": {
+            "pivot_lookback": 10
+        },
+        "sharpe": 0.0,
+        "pnl": 0.0,
+        "trades": 0
+    },
+    "numerouno_on_PIDILITIND": {
+        "params": {
+            "pivot_lookback": 10
+        },
+        "sharpe": 0.05827644245101113,
+        "pnl": 142598.1970491727,
+        "trades": 22
+    },
+    "numerouno_on_PNB": {
+        "params": {
+            "pivot_lookback": 10
+        },
+        "sharpe": 0.06646938756005807,
+        "pnl": 199889.08049553586,
+        "trades": 13
+    },
+    "numerouno_on_RECLTD": {
+        "params": {
+            "pivot_lookback": 5
+        },
+        "sharpe": 0.06646938756005807,
+        "pnl": 199889.08049553586,
+        "trades": 13
+    },
+    "numerouno_on_SAIL": {
+        "params": {
+            "pivot_lookback": 10
+        },
+        "sharpe": 0.051122191451736916,
+        "pnl": 116746.48967367997,
+        "trades": 10
+    },
+    "numerouno_on_SRF": {
+        "params": {
+            "pivot_lookback": 10
+        },
+        "sharpe": 0.06763501807475393,
+        "pnl": 197561.84046844023,
+        "trades": 5
+    },
+    "numerouno_on_TORNTPHARM": {
+        "params": {
+            "pivot_lookback": 5
+        },
+        "sharpe": 0.06763501807475393,
+        "pnl": 197561.84046844023,
+        "trades": 5
+    },
+    "numerouno_on_TVSMOTOR": {
+        "params": {
+            "pivot_lookback": 10
+        },
+        "sharpe": 0.06062321586181213,
+        "pnl": 127201.91086796278,
+        "trades": 4
+    },
+    "numerouno_on_UBL": {
+        "params": {
+            "pivot_lookback": 5
+        },
+        "sharpe": 0.06062321586181213,
+        "pnl": 127201.91086796278,
+        "trades": 4
+    },
+    "numerouno_on_VEDL": {
+        "params": {
+            "pivot_lookback": 5
+        },
+        "sharpe": 0.04589798260270487,
+        "pnl": 66171.48051105964,
+        "trades": 4
+    },
+    "numerouno_on_VOLTAS": {
+        "params": {
+            "pivot_lookback": 5
+        },
+        "sharpe": -0.007342593063281015,
+        "pnl": -9733.144256798942,
+        "trades": 1
+    },
+    "numerouno_on_HAVELLS": {
+        "params": {
+            "pivot_lookback": 5
+        },
+        "sharpe": -0.007342593063281015,
+        "pnl": -9733.144256798942,
+        "trades": 1
+    },
+    "numerouno_on_PEL": {
+        "params": {
+            "pivot_lookback": 5
+        },
+        "sharpe": -0.007342593063281015,
+        "pnl": -9733.144256798942,
+        "trades": 1
+    },
+    "numerouno_on_PAGEIND": {
+        "params": {
+            "pivot_lookback": 10
+        },
+        "sharpe": 0.06569203244228909,
+        "pnl": 147290.94383195034,
+        "trades": 15
+    },
+    "rangebound_on_AMBUJACEM": {
+        "params": {
+            "primary_timeframe": 15,
+            "bb_length": 20,
+            "adx_window": 14
+        },
+        "sharpe": 0.06569203244228909,
+        "pnl": 147290.94383195034,
+        "trades": 15
+    },
+    "rangebound_on_AUROPHARMA": {
+        "params": {
+            "primary_timeframe": 15,
+            "bb_length": 30,
+            "adx_window": 20
+        },
+        "sharpe": 0.06531708746833073,
+        "pnl": 112470.95333156043,
+        "trades": 7
+    },
+    "rangebound_on_BANKBARODA": {
+        "params": {
+            "primary_timeframe": 15,
+            "bb_length": 20,
+            "adx_window": 14
+        },
+        "sharpe": 0.06531708746833073,
+        "pnl": 112470.95333156043,
+        "trades": 7
+    },
+    "rangebound_on_BERGEPAINT": {
+        "params": {
+            "primary_timeframe": 15,
+            "bb_length": 20,
+            "adx_window": 20
+        },
+        "sharpe": 0.049457940542149643,
+        "pnl": 82967.85315504458,
+        "trades": 3
+    },
+    "rangebound_on_CANBK": {
+        "params": {
+            "primary_timeframe": 15,
+            "bb_length": 30,
+            "adx_window": 20
+        },
+        "sharpe": 0.05840147709094379,
+        "pnl": 141625.00000000282,
+        "trades": 1
+    },
+    "rangebound_on_CHOLAFIN": {
+        "params": {
+            "primary_timeframe": 15,
+            "bb_length": 20,
+            "adx_window": 14
+        },
+        "sharpe": 0.05840147709094379,
+        "pnl": 141625.00000000282,
+        "trades": 1
+    },
+    "rangebound_on_DABUR": {
+        "params": {
+            "primary_timeframe": 15,
+            "bb_length": 20,
+            "adx_window": 14
+        },
+        "sharpe": 0.04820459930537217,
+        "pnl": 71101.81675598683,
+        "trades": 1
+    },
+    "rangebound_on_DLF": {
+        "params": {
+            "primary_timeframe": 15,
+            "bb_length": 20,
+            "adx_window": 14
+        },
+        "sharpe": 0.046296355376605716,
+        "pnl": 68431.14189866769,
+        "trades": 1
+    },
+    "rangebound_on_GAIL": {
+        "params": {
+            "primary_timeframe": 15,
+            "bb_length": 20,
+            "adx_window": 20
+        },
+        "sharpe": 0.0008016703187505237,
+        "pnl": -28902.708001648192,
+        "trades": 15
+    },
+    "rangebound_on_GODREJCP": {
+        "params": {
+            "primary_timeframe": 15,
+            "bb_length": 30,
+            "adx_window": 20
+        },
+        "sharpe": 0.018611464472588102,
+        "pnl": 6733.683059659646,
+        "trades": 10
+    },
+    "rangebound_on_ICICIGI": {
+        "params": {
+            "primary_timeframe": 15,
+            "bb_length": 30,
+            "adx_window": 14
+        },
+        "sharpe": 0.035011166135787815,
+        "pnl": 53408.892826200805,
+        "trades": 5
+    },
+    "rangebound_on_ICICIPRULI": {
+        "params": {
+            "primary_timeframe": 15,
+            "bb_length": 20,
+            "adx_window": 20
+        },
+        "sharpe": 0.05107310343119414,
+        "pnl": 132515.51147853804,
+        "trades": 3
+    },
+    "rangebound_on_IDFCFIRSTB": {
+        "params": {
+            "primary_timeframe": 15,
+            "bb_length": 30,
+            "adx_window": 20
+        },
+        "sharpe": 0.04429822420745566,
+        "pnl": 99680.27750974258,
+        "trades": 3
+    },
+    "rangebound_on_IGL": {
+        "params": {
+            "primary_timeframe": 15,
+            "bb_length": 20,
+            "adx_window": 14
+        },
+        "sharpe": 0.04429822420745566,
+        "pnl": 99680.27750974258,
+        "trades": 3
+    },
+    "rangebound_on_INDIGO": {
+        "params": {
+            "primary_timeframe": 15,
+            "bb_length": 20,
+            "adx_window": 14
+        },
+        "sharpe": 0.03495137949373613,
+        "pnl": 50052.19206680394,
+        "trades": 1
+    },
+    "rangebound_on_MUTHOOTFIN": {
+        "params": {
+            "primary_timeframe": 15,
+            "bb_length": 20,
+            "adx_window": 14
+        },
+        "sharpe": 0.025966926579501125,
+        "pnl": 28862.21294363116,
+        "trades": 1
+    },
+    "rangebound_on_NAUKRI": {
+        "params": {
+            "primary_timeframe": 15,
+            "bb_length": 30,
+            "adx_window": 14
+        },
+        "sharpe": 0.04425995585394155,
+        "pnl": 130777.26859006056,
+        "trades": 14
+    },
+    "rangebound_on_PIDILITIND": {
+        "params": {
+            "primary_timeframe": 15,
+            "bb_length": 20,
+            "adx_window": 14
+        },
+        "sharpe": 0.04425995585394155,
+        "pnl": 130777.26859006056,
+        "trades": 14
+    },
+    "rangebound_on_PNB": {
+        "params": {
+            "primary_timeframe": 15,
+            "bb_length": 20,
+            "adx_window": 14
+        },
+        "sharpe": 0.03380984542611627,
+        "pnl": 50802.62749711042,
+        "trades": 11
+    },
+    "rangebound_on_RECLTD": {
+        "params": {
+            "primary_timeframe": 15,
+            "bb_length": 30,
+            "adx_window": 14
+        },
+        "sharpe": 0.029609884236271193,
+        "pnl": 22370.976055095594,
+        "trades": 3
+    },
+    "rangebound_on_SAIL": {
+        "params": {
+            "primary_timeframe": 15,
+            "bb_length": 20,
+            "adx_window": 14
+        },
+        "sharpe": 0.029609884236271193,
+        "pnl": 22370.976055095594,
+        "trades": 3
+    },
+    "rangebound_on_SRF": {
+        "params": {
+            "primary_timeframe": 15,
+            "bb_length": 20,
+            "adx_window": 14
+        },
+        "sharpe": 0.04603013605019344,
+        "pnl": 140688.25518084122,
+        "trades": 2
+    },
+    "rangebound_on_TORNTPHARM": {
+        "params": {
+            "primary_timeframe": 15,
+            "bb_length": 20,
+            "adx_window": 14
+        },
+        "sharpe": 0.03747342923720034,
+        "pnl": 70189.21546631625,
+        "trades": 1
+    },
+    "rangebound_on_TVSMOTOR": {
+        "params": {
+            "primary_timeframe": 15,
+            "bb_length": 20,
+            "adx_window": 14
+        },
+        "sharpe": 0.028110825120403776,
+        "pnl": 33120.17883503031,
+        "trades": 2
+    },
+    "rangebound_on_UBL": {
+        "params": {
+            "primary_timeframe": 15,
+            "bb_length": 30,
+            "adx_window": 20
+        },
+        "sharpe": 0.04326403083652283,
+        "pnl": 66223.52081811414,
+        "trades": 1
+    },
+    "rangebound_on_VEDL": {
+        "params": {
+            "primary_timeframe": 15,
+            "bb_length": 20,
+            "adx_window": 14
+        },
+        "sharpe": 0.04326403083652283,
+        "pnl": 66223.52081811414,
+        "trades": 1
+    },
+    "rangebound_on_VOLTAS": {
+        "params": {
+            "primary_timeframe": 15,
+            "bb_length": 20,
+            "adx_window": 14
+        },
+        "sharpe": 0.006475194984040235,
+        "pnl": -23170.002408770517,
+        "trades": 16
+    },
+    "rangebound_on_HAVELLS": {
+        "params": {
+            "primary_timeframe": 15,
+            "bb_length": 20,
+            "adx_window": 14
+        },
+        "sharpe": 0.051864913439195276,
+        "pnl": 166290.04837922897,
+        "trades": 8
+    },
+    "rangebound_on_PEL": {
+        "params": {
+            "primary_timeframe": 15,
+            "bb_length": 20,
+            "adx_window": 14
+        },
+        "sharpe": 0.03338394681686853,
+        "pnl": 39161.28018116491,
+        "trades": 4
+    },
+    "rangebound_on_PAGEIND": {
+        "params": {
+            "primary_timeframe": 15,
+            "bb_length": 20,
+            "adx_window": 14
+        },
+        "sharpe": 0.020923465861400765,
+        "pnl": -185.73349672669215,
+        "trades": 4
+    },
+    "sankhyaek_on_AMBUJACEM": {
+        "params": {
+            "bb_length": 20,
+            "bb_std": 2.0,
+            "rsi_period": 14,
+            "rsi_oversold": 30,
+            "rsi_overbought": 60,
+            "stop_loss_pct": 0.005,
+            "risk_reward_ratio": 1.5
+        },
+        "sharpe": 0.08380329122332468,
+        "pnl": 484105.41970511683,
+        "trades": 2
+    },
+    "sankhyaek_on_AUROPHARMA": {
+        "params": {
+            "bb_length": 20,
+            "bb_std": 2.0,
+            "rsi_period": 14,
+            "rsi_oversold": 40,
+            "rsi_overbought": 60,
+            "stop_loss_pct": 0.01,
+            "risk_reward_ratio": 1.5
+        },
+        "sharpe": 0.07364987594004686,
+        "pnl": 180907.11560619003,
+        "trades": 3
+    },
+    "sankhyaek_on_BANKBARODA": {
+        "params": {
+            "bb_length": 20,
+            "bb_std": 2.0,
+            "rsi_period": 14,
+            "rsi_oversold": 30,
+            "rsi_overbought": 60,
+            "stop_loss_pct": 0.005,
+            "risk_reward_ratio": 1.5
+        },
+        "sharpe": 0.06927387988214652,
+        "pnl": 338684.1198760547,
+        "trades": 1
+    },
+    "sankhyaek_on_CANBK": {
+        "params": {
+            "bb_length": 30,
+            "bb_std": 2.0,
+            "rsi_period": 14,
+            "rsi_oversold": 30,
+            "rsi_overbought": 60,
+            "stop_loss_pct": 0.01,
+            "risk_reward_ratio": 2.0
+        },
+        "sharpe": 0.1036464417147933,
+        "pnl": 387509.8159609707,
+        "trades": 5
+    },
+    "sankhyaek_on_CHOLAFIN": {
+        "params": {
+            "bb_length": 20,
+            "bb_std": 2.0,
+            "rsi_period": 14,
+            "rsi_oversold": 30,
+            "rsi_overbought": 60,
+            "stop_loss_pct": 0.005,
+            "risk_reward_ratio": 2.0
+        },
+        "sharpe": 0.035103066189105935,
+        "pnl": 59209.039548026434,
+        "trades": 1
+    },
+    "test_on_DABUR": {
+        "params": {},
+        "sharpe": -0.2515426908584727,
+        "pnl": -99599.03092406318,
+        "trades": 46696
+    },
+    "test_on_DLF": {
+        "params": {},
+        "sharpe": -0.0824028714373387,
+        "pnl": -92930.3308820403,
+        "trades": 48115
+    },
+    "test_on_GAIL": {
+        "params": {},
+        "sharpe": -0.04837886355661606,
+        "pnl": -85354.18017682509,
+        "trades": 44808
+    },
+    "test_on_GODREJCP": {
+        "params": {},
+        "sharpe": -0.4183008409411837,
+        "pnl": -99984.2696995179,
+        "trades": 46902
+    },
+    "test_on_ICICIGI": {
+        "params": {},
+        "sharpe": 0.0,
+        "pnl": 0.0,
+        "trades": 0
+    },
+    "test_on_ICICIPRULI": {
+        "params": {},
+        "sharpe": -0.2461361403651355,
+        "pnl": -99918.69709277936,
+        "trades": 45811
+    },
+    "test_on_IDFCFIRSTB": {
+        "params": {},
+        "sharpe": -0.285967711696064,
+        "pnl": -99171.08575659971,
+        "trades": 46904
+    },
+    "test_on_IGL": {
+        "params": {},
+        "sharpe": -0.149755726323632,
+        "pnl": -98508.74706011811,
+        "trades": 47322
+    },
+    "test_on_INDIGO": {
+        "params": {},
+        "sharpe": -0.18862359879955204,
+        "pnl": -99044.58302538261,
+        "trades": 41053
+    },
+    "test_on_MUTHOOTFIN": {
+        "params": {},
+        "sharpe": -0.22790825262884512,
+        "pnl": -99089.80239394987,
+        "trades": 48795
+    },
+    "test_on_NAUKRI": {
+        "params": {},
+        "sharpe": -0.2217720121215969,
+        "pnl": -98439.79585299286,
+        "trades": 36080
+    },
+    "test_on_PIDILITIND": {
+        "params": {},
+        "sharpe": -0.2167351407480395,
+        "pnl": -98632.58560954288,
+        "trades": 40228
+    },
+    "test_on_PNB": {
+        "params": {},
+        "sharpe": 0.0,
+        "pnl": 0.0,
+        "trades": 0
+    },
+    "test_on_RECLTD": {
+        "params": {},
+        "sharpe": 0.0,
+        "pnl": 0.0,
+        "trades": 0
+    },
+    "test_on_SAIL": {
+        "params": {},
+        "sharpe": -0.16056016757523164,
+        "pnl": -98152.74392538554,
+        "trades": 45579
+    },
+    "test_on_SRF": {
+        "params": {},
+        "sharpe": -0.21970963343055452,
+        "pnl": -99690.81719776586,
+        "trades": 47593
+    },
+    "test_on_TORNTPHARM": {
+        "params": {},
+        "sharpe": -0.5320492511534992,
+        "pnl": -99999.94071185536,
+        "trades": 35302
+    },
+    "test_on_TVSMOTOR": {
+        "params": {},
+        "sharpe": -0.2522296209321128,
+        "pnl": -98882.09911703171,
+        "trades": 47887
+    },
+    "test_on_UBL": {
+        "params": {},
+        "sharpe": -0.2623201204415098,
+        "pnl": -99933.05824311647,
+        "trades": 41818
+    },
+    "test_on_VEDL": {
+        "params": {},
+        "sharpe": 0.0,
+        "pnl": 0.0,
+        "trades": 0
+    },
+    "test_on_VOLTAS": {
+        "params": {},
+        "sharpe": 0.0,
+        "pnl": 0.0,
+        "trades": 0
+    },
+    "test_on_HAVELLS": {
+        "params": {},
+        "sharpe": -0.22309656882870718,
+        "pnl": -99492.81114968951,
+        "trades": 48443
+    },
+    "test_on_PEL": {
+        "params": {},
+        "sharpe": 0.0,
+        "pnl": 0.0,
+        "trades": 0
+    },
+    "test_on_PAGEIND": {
+        "params": {},
+        "sharpe": -0.15980246301678241,
+        "pnl": -97914.92660321774,
+        "trades": 48331
+    },
+    "trend_on_AMBUJACEM": {
+        "params": {
+            "ema_short": 9,
+            "ema_long": 21,
+            "adx_period": 14
+        },
+        "sharpe": 0.0,
+        "pnl": 0.0,
+        "trades": 0
+    },
+    "trend_on_CHOLAFIN": {
+        "params": {
+            "ema_short": 12,
+            "ema_long": 21,
+            "adx_period": 14
+        },
+        "sharpe": 0.08391700913653838,
+        "pnl": 342316.14058211085,
+        "trades": 1078
+    },
+    "trend_on_DABUR": {
+        "params": {
+            "ema_short": 9,
+            "ema_long": 21,
+            "adx_period": 14
+        },
+        "sharpe": 0.0,
+        "pnl": 0.0,
+        "trades": 0
+    },
+    "trend_on_DLF": {
+        "params": {
+            "ema_short": 12,
+            "ema_long": 26,
+            "adx_period": 20
+        },
+        "sharpe": 0.05001687413904038,
+        "pnl": 122041.8314168159,
+        "trades": 501
+    },
+    "trend_on_GAIL": {
+        "params": {
+            "ema_short": 9,
+            "ema_long": 21,
+            "adx_period": 14
+        },
+        "sharpe": 0.028595504333140453,
+        "pnl": 36278.449163951576,
+        "trades": 626
+    },
+    "trend_on_GODREJCP": {
+        "params": {
+            "ema_short": 9,
+            "ema_long": 26,
+            "adx_period": 20
+        },
+        "sharpe": 0.0807988027346224,
+        "pnl": 538182.8293493033,
+        "trades": 1821
+    },
+    "trend_on_ICICIGI": {
+        "params": {
+            "ema_short": 9,
+            "ema_long": 21,
+            "adx_period": 14
+        },
+        "sharpe": 0.05399934517843674,
+        "pnl": 178993.32945860276,
+        "trades": 1078
+    },
+    "trend_on_ICICIPRULI": {
+        "params": {
+            "ema_short": 12,
+            "ema_long": 21,
+            "adx_period": 20
+        },
+        "sharpe": 0.04758163005567173,
+        "pnl": 97981.16237110118,
+        "trades": 1834
+    },
+    "trend_on_IDFCFIRSTB": {
+        "params": {
+            "ema_short": 12,
+            "ema_long": 21,
+            "adx_period": 14
+        },
+        "sharpe": 0.0116221855616844,
+        "pnl": -2495.6306380365613,
+        "trades": 600
+    },
+    "trend_on_IGL": {
+        "params": {
+            "ema_short": 9,
+            "ema_long": 21,
+            "adx_period": 14
+        },
+        "sharpe": 0.0,
+        "pnl": 0.0,
+        "trades": 0
+    },
+    "trend_on_INDIGO": {
+        "params": {
+            "ema_short": 9,
+            "ema_long": 21,
+            "adx_period": 14
+        },
+        "sharpe": 0.0,
+        "pnl": 0.0,
+        "trades": 0
+    },
+    "trend_on_MUTHOOTFIN": {
+        "params": {
+            "ema_short": 9,
+            "ema_long": 21,
+            "adx_period": 14
+        },
+        "sharpe": 0.049218847128824766,
+        "pnl": 140138.4083044999,
+        "trades": 1
+    },
+    "trend_on_NAUKRI": {
+        "params": {
+            "ema_short": 12,
+            "ema_long": 26,
+            "adx_period": 20
+        },
+        "sharpe": 0.09338395429048248,
+        "pnl": 1236490.2506964358,
+        "trades": 1
+    },
+    "trend_on_PIDILITIND": {
+        "params": {
+            "ema_short": 9,
+            "ema_long": 21,
+            "adx_period": 14
+        },
+        "sharpe": 0.09316563729132755,
+        "pnl": 1225414.364640918,
+        "trades": 1
+    },
+    "trend_on_PNB": {
+        "params": {
+            "ema_short": 12,
+            "ema_long": 26,
+            "adx_period": 14
+        },
+        "sharpe": 0.06472720094997296,
+        "pnl": 183410.307162247,
+        "trades": 1
+    },
+    "trend_on_RECLTD": {
+        "params": {
+            "ema_short": 9,
+            "ema_long": 21,
+            "adx_period": 14
+        },
+        "sharpe": 0.06494126214155217,
+        "pnl": 184809.19404748274,
+        "trades": 1
+    },
+    "trend_on_SAIL": {
+        "params": {
+            "ema_short": 12,
+            "ema_long": 26,
+            "adx_period": 14
+        },
+        "sharpe": 0.09485113316927984,
+        "pnl": 1152571.155226086,
+        "trades": 1
+    },
+    "trend_on_SRF": {
+        "params": {
+            "ema_short": 12,
+            "ema_long": 21,
+            "adx_period": 14
+        },
+        "sharpe": 0.08564725353316262,
+        "pnl": 428451.53555291315,
+        "trades": 1
+    },
+    "trend_on_TORNTPHARM": {
+        "params": {
+            "ema_short": 12,
+            "ema_long": 26,
+            "adx_period": 20
+        },
+        "sharpe": 0.10951909093607297,
+        "pnl": 1502110.8179420459,
+        "trades": 1
+    },
+    "trend_on_TVSMOTOR": {
+        "params": {
+            "ema_short": 9,
+            "ema_long": 21,
+            "adx_period": 20
+        },
+        "sharpe": 0.10938014538720767,
+        "pnl": 1494956.6587864973,
+        "trades": 1
+    },
+    "trend_on_UBL": {
+        "params": {
+            "ema_short": 9,
+            "ema_long": 26,
+            "adx_period": 20
+        },
+        "sharpe": 0.049888350276360696,
+        "pnl": 148551.3608428191,
+        "trades": 1
+    },
+    "trend_on_VEDL": {
+        "params": {
+            "ema_short": 9,
+            "ema_long": 26,
+            "adx_period": 14
+        },
+        "sharpe": 0.08273116149830528,
+        "pnl": 508319.8051948302,
+        "trades": 1
+    },
+    "trend_on_VOLTAS": {
+        "params": {
+            "ema_short": 9,
+            "ema_long": 21,
+            "adx_period": 14
+        },
+        "sharpe": 0.0,
+        "pnl": 0.0,
+        "trades": 0
+    }
+}
